@@ -4,14 +4,15 @@ import { deleteSession } from "@/lib/mock-data"
 
 export async function POST() {
   try {
-    const sessionId = cookies().get("session_id")?.value
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get("session_id")?.value
 
     if (sessionId) {
       // Delete the session
       deleteSession(sessionId)
 
       // Clear the cookie
-      cookies().delete("session_id")
+      cookieStore.delete("session_id")
     }
 
     return NextResponse.json({ success: true })

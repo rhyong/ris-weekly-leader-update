@@ -4,7 +4,8 @@ import { findSessionById, findUserById } from "@/lib/mock-data"
 
 export async function GET() {
   try {
-    const sessionId = cookies().get("session_id")?.value
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get("session_id")?.value
 
     if (!sessionId) {
       // For preview purposes, return a mock user
@@ -20,7 +21,7 @@ export async function GET() {
     const session = findSessionById(sessionId)
 
     if (!session) {
-      cookies().delete("session_id")
+      cookieStore.delete("session_id")
       // For preview purposes, return a mock user
       return NextResponse.json({
         id: "preview-user",
@@ -34,7 +35,7 @@ export async function GET() {
     const user = findUserById(session.userId)
 
     if (!user) {
-      cookies().delete("session_id")
+      cookieStore.delete("session_id")
       // For preview purposes, return a mock user
       return NextResponse.json({
         id: "preview-user",

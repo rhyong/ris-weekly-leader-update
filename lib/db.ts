@@ -1,5 +1,5 @@
-import { Pool } from "pg"
-import { createHash } from "crypto"
+import { Pool } from "pg";
+import { createHash } from "crypto";
 
 // Database connection configuration
 const pool = new Pool({
@@ -7,64 +7,66 @@ const pool = new Pool({
   password: process.env.POSTGRES_PASSWORD || "postgres",
   host: process.env.POSTGRES_HOST || "localhost",
   port: Number.parseInt(process.env.POSTGRES_PORT || "5432"),
-  database: process.env.POSTGRES_DB || "weekly_leadership_update",
+  database: process.env.POSTGRES_DB || "weekly_leadership_updates",
   ssl:
     process.env.POSTGRES_SSL === "true"
       ? {
           rejectUnauthorized: false,
         }
       : undefined,
-})
+});
 
 // Helper function to hash passwords
 export function hashPassword(password: string): string {
-  return createHash("sha256").update(password).digest("hex")
+  return createHash("sha256").update(password).digest("hex");
 }
 
 // Helper function to query the database
 export async function query(text: string, params?: any[]) {
   try {
-    const start = Date.now()
-    const res = await pool.query(text, params)
-    const duration = Date.now() - start
-    console.log("Executed query", { text, duration, rows: res.rowCount })
-    return res
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log("Executed query", { text, duration, rows: res.rowCount });
+    return res;
   } catch (error) {
-    console.error("Error executing query", { text, error })
-    throw error
+    console.error("Error executing query", { text, error });
+    throw error;
   }
 }
 
 // Helper function to get a client from the pool
 export async function getClient() {
-  const client = await pool.connect()
-  const query = client.query
-  const release = client.release
+  const client = await pool.connect();
+  const query = client.query;
+  const release = client.release;
 
   // Set a timeout of 5 seconds, after which we will log this client's last query
   const timeout = setTimeout(() => {
-    console.error("A client has been checked out for more than 5 seconds!")
-    console.error(`The last executed query on this client was: ${client.lastQuery}`)
-  }, 5000)
+    console.error("A client has been checked out for more than 5 seconds!");
+    console.error(
+      `The last executed query on this client was: ${client.lastQuery}`
+    );
+  }, 5000);
 
   // Monkey patch the query method to keep track of the last query executed
   client.query = (...args: any[]) => {
-    client.lastQuery = args
-    return query.apply(client, args)
-  }
+    client.lastQuery = args;
+    return query.apply(client, args);
+  };
 
   client.release = () => {
-    clearTimeout(timeout)
-    client.query = query
-    client.release = release
-    return release.apply(client)
-  }
+    clearTimeout(timeout);
+    client.query = query;
+    client.release = release;
+    return release.apply(client);
+  };
 
-  return client
+  return client;
 }
 
 export default {
   query,
   getClient,
   hashPassword,
-}
+};

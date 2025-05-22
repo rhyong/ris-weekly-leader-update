@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { weeklyUpdates } from "@/lib/mock-data"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+type Params = { params: { id: string } };
+
+export async function GET(
+  request: NextRequest,
+  context: Params
+) {
   try {
-    const id = params.id
+    const id = context.params.id
 
     // Find the update with the matching ID
     const update = weeklyUpdates.find((update) => update.id === id)

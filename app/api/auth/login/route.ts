@@ -20,7 +20,8 @@ export async function POST(request: Request) {
     const session = createSession(user.id)
 
     // Set a session cookie
-    cookies().set({
+    const cookieStore = await cookies()
+    cookieStore.set({
       name: "session_id",
       value: session.id,
       httpOnly: true,

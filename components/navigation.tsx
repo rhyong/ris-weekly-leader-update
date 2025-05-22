@@ -37,6 +37,14 @@ export function Navigation() {
             >
               View Weekly Updates History
             </Link>
+            <Link
+              href="/help"
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === "/help" ? "text-foreground font-medium" : "text-foreground/60"
+              }`}
+            >
+              Help & Setup
+            </Link>
           </div>
           {user && (
             <div className="flex items-center gap-4">

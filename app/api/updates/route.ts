@@ -6,7 +6,8 @@ export async function GET() {
   try {
     // For development/preview purposes, return mock data even without authentication
     // This ensures the history page works in the preview environment
-    const sessionId = cookies().get("session_id")?.value
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get("session_id")?.value
 
     // If there's no session, return mock data for demo purposes
     if (!sessionId) {
@@ -35,7 +36,7 @@ export async function GET() {
     const session = findSessionById(sessionId)
 
     if (!session) {
-      cookies().delete("session_id")
+      cookieStore.delete("session_id")
       // For demo purposes, return mock data even if session is invalid
       const mockUpdates = [
         {
@@ -80,7 +81,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const sessionId = cookies().get("session_id")?.value
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get("session_id")?.value
     let userId = "preview-user"
 
     // If there's a valid session, use the real user ID
