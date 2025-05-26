@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { deleteSession } from "@/lib/mock-data"
+import { deleteSession } from "@/lib/auth-db"
 
 export async function POST() {
   try {
@@ -9,7 +9,7 @@ export async function POST() {
 
     if (sessionId) {
       // Delete the session
-      deleteSession(sessionId)
+      await deleteSession(sessionId)
 
       // Clear the cookie
       cookieStore.delete("session_id")

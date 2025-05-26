@@ -61,7 +61,6 @@ CREATE TABLE team_health (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     update_id UUID NOT NULL REFERENCES weekly_updates(id) ON DELETE CASCADE,
     owner_input TEXT,
-    traffic_light VARCHAR(10) CHECK (traffic_light IN ('Green', 'Yellow', 'Red')),
     sentiment_score DECIMAL(3,1),
     overall_status TEXT,
     energy_engagement TEXT,

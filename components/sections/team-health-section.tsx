@@ -16,14 +16,12 @@ interface TeamHealthSectionProps {
 
 export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
   const { register, watch, setValue } = form
-  const trafficLight = watch("team_health.traffic_light")
   const sentimentScore = watch("team_health.sentiment_score")
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Team Health</CardTitle>
-        <TrafficLightIndicator value={trafficLight} />
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -66,33 +64,6 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
           />
         </div>
 
-        <div>
-          <Label>Traffic Light Status</Label>
-          <RadioGroup
-            value={trafficLight}
-            onValueChange={(value) => setValue("team_health.traffic_light", value as TrafficLight)}
-            className="flex space-x-4 mt-2"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Green" id="health-green" />
-              <Label htmlFor="health-green" className="text-green-600 font-medium">
-                On Track
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Yellow" id="health-yellow" />
-              <Label htmlFor="health-yellow" className="text-yellow-600 font-medium">
-                Watch
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Red" id="health-red" />
-              <Label htmlFor="health-red" className="text-red-600 font-medium">
-                Off Track
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
 
         <div>
           <div className="flex justify-between">

@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navigation } from "@/components/navigation"
 import { AuthProvider } from "@/lib/auth-context"
+import { SessionProvider } from "@/lib/session-provider"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -22,20 +23,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} no-transitions`} suppressHydrationWarning>
+      <body className={`${inter.className} no-transitions`} suppressHydrationWarning={true}>
         <ThemeProvider 
           attribute="class" 
           defaultTheme="light" 
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <div className="relative min-h-screen flex flex-col">
-              <Navigation />
-              <main className="flex-1 px-10 max-w-5xl mx-auto">{children}</main>
-              <Toaster />
-            </div>
-          </AuthProvider>
+          <SessionProvider>
+            <AuthProvider>
+              <div className="relative min-h-screen flex flex-col">
+                <Navigation />
+                <main className="flex-1 max-w-7xl w-full mx-auto">{children}</main>
+                <Toaster />
+              </div>
+            </AuthProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

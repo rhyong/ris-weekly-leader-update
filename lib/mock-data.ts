@@ -1,4 +1,4 @@
-import { createHash } from "crypto"
+import { createHash, randomUUID } from "crypto"
 
 // Mock user data
 export interface User {
@@ -7,12 +7,24 @@ export interface User {
   name: string
   role: string
   password: string
+  email?: string
+  teamName?: string
+  clientOrg?: string
+  bio?: string
+  profileImage?: string
 }
 
 export interface Session {
   id: string
   userId: string
   expires: Date
+}
+
+export interface TeamMember {
+  id: string
+  name: string
+  role: string
+  email?: string
 }
 
 export interface WeeklyUpdate {
@@ -26,6 +38,56 @@ export interface WeeklyUpdate {
   updatedAt: string
 }
 
+// Mock team members
+export const teamMembers: Record<string, TeamMember[]> = {
+  "1": [
+    {
+      id: "101",
+      name: "Sarah Johnson",
+      role: "Senior Developer",
+      email: "sarah.johnson@example.com"
+    },
+    {
+      id: "102",
+      name: "Michael Chen",
+      role: "UX Designer",
+      email: "michael.chen@example.com"
+    },
+    {
+      id: "103",
+      name: "James Smith",
+      role: "Backend Developer",
+      email: "james.smith@example.com"
+    },
+    {
+      id: "104",
+      name: "Emily Davis",
+      role: "Frontend Developer",
+      email: "emily.davis@example.com"
+    }
+  ],
+  "2": [
+    {
+      id: "201",
+      name: "David Wilson",
+      role: "Product Manager",
+      email: "david.wilson@example.com"
+    },
+    {
+      id: "202",
+      name: "Lisa Taylor",
+      role: "QA Lead",
+      email: "lisa.taylor@example.com"
+    },
+    {
+      id: "203",
+      name: "Robert Brown",
+      role: "DevOps Engineer",
+      email: "robert.brown@example.com"
+    }
+  ]
+}
+
 // Mock users
 export const users: User[] = [
   {
@@ -35,6 +97,11 @@ export const users: User[] = [
     role: "Team Lead",
     // This is the hashed version of "password123"
     password: "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    email: "test.user@example.com",
+    teamName: "Frontend Platform Team",
+    clientOrg: "Acme Corporation",
+    bio: "Experienced team lead with a passion for building high-performance web applications and mentoring junior developers.",
+    profileImage: "/placeholder-user.jpg"
   },
   {
     id: "2",
@@ -43,6 +110,11 @@ export const users: User[] = [
     role: "Project Manager",
     // This is the hashed version of "password456"
     password: "c6ba91b90d922e159893f46c387e5dc1b3dc5c101a5a4522f16e2b9408b0b45f",
+    email: "jane.doe@example.com",
+    teamName: "Backend Services Team",
+    clientOrg: "TechCorp Inc.",
+    bio: "Seasoned project manager with a background in agile methodologies and a track record of delivering complex projects on time.",
+    profileImage: "/placeholder-user.jpg"
   },
 ]
 
@@ -50,7 +122,8 @@ export const users: User[] = [
 export let sessions: Session[] = []
 
 // Mock weekly updates
-export const weeklyUpdates: WeeklyUpdate[] = [
+// Using let instead of const to allow reassignment if needed
+export let weeklyUpdates: WeeklyUpdate[] = [
   {
     id: "1",
     userId: "1",
@@ -249,7 +322,7 @@ export function findUserByCredentials(username: string, hashedPassword: string):
 
 export function createSession(userId: string): Session {
   const session: Session = {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     userId,
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
   }
@@ -269,6 +342,26 @@ export function findUserById(userId: string): User | undefined {
   return users.find((user) => user.id === userId)
 }
 
+export function getTeamMembersForUser(userId: string): TeamMember[] {
+  return teamMembers[userId] || []
+}
+
+export function updateUserProfile(userId: string, updatedData: Partial<User>): User | undefined {
+  const userIndex = users.findIndex(user => user.id === userId);
+  if (userIndex === -1) return undefined;
+  
+  // Don't allow updating password through this function
+  const { password, ...safeData } = updatedData;
+  
+  // Update user
+  users[userIndex] = {
+    ...users[userIndex],
+    ...safeData
+  };
+  
+  return users[userIndex];
+}
+
 export function getUpdatesByUserId(userId: string): WeeklyUpdate[] {
   return weeklyUpdates
     .filter((update) => update.userId === userId)
@@ -277,43 +370,163 @@ export function getUpdatesByUserId(userId: string): WeeklyUpdate[] {
     })
 }
 
+// For debugging persistence issues
+let updateCounter = 0;
+
+// Add a global to ensure persistence across API requests
+if (typeof global !== 'undefined') {
+  if (!global.__mockData) {
+    // Initialize the global store
+    global.__mockData = {
+      weeklyUpdatesStore: [...weeklyUpdates]
+    };
+    console.log("Initialized global mock data store with", weeklyUpdates.length, "updates");
+  } else if (global.__mockData.weeklyUpdatesStore) {
+    // Use the global store if it exists and has data
+    if (global.__mockData.weeklyUpdatesStore.length > weeklyUpdates.length) {
+      console.log("Restoring weeklyUpdates from global store:",
+        "global:", global.__mockData.weeklyUpdatesStore.length,
+        "local:", weeklyUpdates.length);
+      weeklyUpdates = [...global.__mockData.weeklyUpdatesStore];
+    } else {
+      // Update the global store with our current data
+      global.__mockData.weeklyUpdatesStore = [...weeklyUpdates];
+      console.log("Updated global store with local weeklyUpdates, count:", weeklyUpdates.length);
+    }
+  }
+}
+
 export function saveUpdate(
   userId: string,
   weekDate: string,
   teamName: string,
   clientOrg: string,
   data: any,
+  updateId?: string, // Optional ID for explicit updates
 ): WeeklyUpdate {
+  updateCounter++;
+  console.log(`[SAVE UPDATE #${updateCounter}] Called with:`, { 
+    userId, 
+    weekDate, 
+    teamName, 
+    clientOrg, 
+    updateId: updateId || "not provided",
+    currentUpdatesCount: weeklyUpdates.length 
+  });
+  
+  // Verify weeklyUpdates exists and is an array
+  if (!weeklyUpdates || !Array.isArray(weeklyUpdates)) {
+    console.error("ERROR: weeklyUpdates is not an array!", typeof weeklyUpdates);
+    
+    // Try to use the global store
+    if (typeof global !== 'undefined' && global.__mockData && Array.isArray(global.__mockData.weeklyUpdatesStore)) {
+      console.log("Restoring from global.__mockData.weeklyUpdatesStore");
+      weeklyUpdates = [...global.__mockData.weeklyUpdatesStore];
+    } else {
+      // Initialize if undefined - this shouldn't happen, but just in case
+      console.log("Initializing empty weeklyUpdates array");
+      weeklyUpdates = [];
+    }
+  }
+  
   // Check if update already exists
-  const existingUpdateIndex = weeklyUpdates.findIndex(
-    (update) => update.userId === userId && update.weekDate === weekDate,
-  )
+  let existingUpdateIndex = -1;
+  
+  // If an explicit updateId is provided, use that for finding the update
+  if (updateId) {
+    console.log(`[SAVE UPDATE #${updateCounter}] Searching for specific update ID:`, updateId);
+    existingUpdateIndex = weeklyUpdates.findIndex(
+      (update) => update.id === updateId
+    );
+  } 
+  // Otherwise, look for an update with matching userId and weekDate
+  else {
+    existingUpdateIndex = weeklyUpdates.findIndex(
+      (update) => update.userId === userId && update.weekDate === weekDate,
+    );
+  }
+  
+  console.log(`[SAVE UPDATE #${updateCounter}] Existing update index:`, existingUpdateIndex);
+  console.log(`[SAVE UPDATE #${updateCounter}] Current updates count:`, weeklyUpdates.length);
 
   const now = new Date().toISOString()
 
   if (existingUpdateIndex >= 0) {
     // Update existing
-    weeklyUpdates[existingUpdateIndex] = {
+    console.log(`[SAVE UPDATE #${updateCounter}] Updating existing update at index:`, existingUpdateIndex);
+    
+    // Create a copy to avoid reference issues
+    const updatedUpdate = {
       ...weeklyUpdates[existingUpdateIndex],
       teamName,
       clientOrg,
       data,
       updatedAt: now,
+    };
+    
+    // Update the array
+    weeklyUpdates[existingUpdateIndex] = updatedUpdate;
+    
+    // Also update the global store if available
+    if (typeof global !== 'undefined' && global.__mockData) {
+      global.__mockData.weeklyUpdatesStore = [...weeklyUpdates];
+      console.log(`[SAVE UPDATE #${updateCounter}] Updated global store for existing update, length:`, 
+        global.__mockData.weeklyUpdatesStore.length);
     }
-    return weeklyUpdates[existingUpdateIndex]
+    
+    console.log(`[SAVE UPDATE #${updateCounter}] Updated existing update with ID:`, updatedUpdate.id);
+    return updatedUpdate;
   } else {
     // Create new
-    const newUpdate: WeeklyUpdate = {
-      id: crypto.randomUUID(),
-      userId,
-      weekDate,
-      teamName,
-      clientOrg,
-      data,
-      createdAt: now,
-      updatedAt: now,
+    try {
+      console.log(`[SAVE UPDATE #${updateCounter}] Creating new update - no existing update found`);
+      const newId = randomUUID();
+      console.log(`[SAVE UPDATE #${updateCounter}] Generated new UUID:`, newId);
+      
+      const newUpdate: WeeklyUpdate = {
+        id: newId,
+        userId,
+        weekDate,
+        teamName,
+        clientOrg,
+        data,
+        createdAt: now,
+        updatedAt: now,
+      }
+      
+      console.log(`[SAVE UPDATE #${updateCounter}] New update object created:`, { 
+        id: newUpdate.id, 
+        userId, 
+        weekDate 
+      });
+      
+      // Make a copy of the array before pushing
+      const updatesBeforePush = [...weeklyUpdates];
+      
+      // Push the new update
+      weeklyUpdates.push(newUpdate);
+      
+      // Also update the global store if available
+      if (typeof global !== 'undefined' && global.__mockData) {
+        global.__mockData.weeklyUpdatesStore = [...weeklyUpdates];
+        console.log(`[SAVE UPDATE #${updateCounter}] Updated global store, length:`, 
+          global.__mockData.weeklyUpdatesStore.length);
+      }
+      
+      console.log(`[SAVE UPDATE #${updateCounter}] New update added to weeklyUpdates array:`, { 
+        beforeLength: updatesBeforePush.length,
+        afterLength: weeklyUpdates.length,
+        success: weeklyUpdates.length > updatesBeforePush.length
+      });
+      
+      // Verify the update was actually added
+      const verifyIndex = weeklyUpdates.findIndex(update => update.id === newId);
+      console.log(`[SAVE UPDATE #${updateCounter}] Verification - update index after adding:`, verifyIndex);
+      
+      return newUpdate
+    } catch (error) {
+      console.error(`[SAVE UPDATE #${updateCounter}] Error creating new update:`, error);
+      throw error;
     }
-    weeklyUpdates.push(newUpdate)
-    return newUpdate
   }
 }

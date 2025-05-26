@@ -2,19 +2,34 @@ import { Pool } from "pg";
 import { createHash } from "crypto";
 
 // Database connection configuration
-const pool = new Pool({
-  user: process.env.POSTGRES_USER || "postgres",
-  password: process.env.POSTGRES_PASSWORD || "postgres",
-  host: process.env.POSTGRES_HOST || "localhost",
-  port: Number.parseInt(process.env.POSTGRES_PORT || "5432"),
-  database: process.env.POSTGRES_DB || "weekly_leadership_updates",
-  ssl:
-    process.env.POSTGRES_SSL === "true"
-      ? {
-          rejectUnauthorized: false,
-        }
-      : undefined,
-});
+let pool: Pool;
+
+if (process.env.DATABASE_URL) {
+  // Use the DATABASE_URL from .env.local if available
+  console.log("Using DATABASE_URL from environment");
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' 
+      ? { rejectUnauthorized: false } 
+      : undefined
+  });
+} else {
+  // Fall back to individual connection parameters
+  console.log("Using individual database connection parameters");
+  pool = new Pool({
+    user: process.env.POSTGRES_USER || "postgres",
+    password: process.env.POSTGRES_PASSWORD || "postgres",
+    host: process.env.POSTGRES_HOST || "localhost",
+    port: Number.parseInt(process.env.POSTGRES_PORT || "5432"),
+    database: process.env.POSTGRES_DB || "weekly_leadership_updates",
+    ssl:
+      process.env.POSTGRES_SSL === "true"
+        ? {
+            rejectUnauthorized: false,
+          }
+        : undefined,
+  });
+}
 
 // Helper function to hash passwords
 export function hashPassword(password: string): string {

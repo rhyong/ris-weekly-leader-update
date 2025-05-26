@@ -83,7 +83,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
                 <p className="text-xs text-right mb-1">Sentiment: {team_health.sentiment_score.toFixed(1)}</p>
                 <SentimentBar value={team_health.sentiment_score} />
               </div>
-              <TrafficLightIndicator value={team_health.traffic_light} />
             </div>
           </div>
 

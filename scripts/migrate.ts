@@ -10,12 +10,6 @@ dotenv.config({ path: ".env.local" });
 const pool = new Pool({
   // Support both connection string and individual parameters
   connectionString: process.env.DATABASE_URL,
-  // Fall back to individual parameters if no connection string
-  user: process.env.POSTGRES_USER || "postgres",
-  password: process.env.POSTGRES_PASSWORD || "postgres",
-  host: process.env.POSTGRES_HOST || "localhost",
-  port: Number.parseInt(process.env.POSTGRES_PORT || "5432"),
-  database: process.env.POSTGRES_DB || "weekly_leadership_updates",
   ssl:
     process.env.POSTGRES_SSL === "true"
       ? {

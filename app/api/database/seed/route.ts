@@ -171,12 +171,11 @@ export async function POST() {
         // Create team health entry
         await pool.query(
           `INSERT INTO team_health 
-          (update_id, owner_input, traffic_light, sentiment_score, overall_status, energy_engagement, roles_alignment) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          (update_id, owner_input, sentiment_score, overall_status, energy_engagement, roles_alignment) 
+          VALUES ($1, $2, $3, $4, $5, $6)`,
           [
             updateId,
             'Team is working well together with good communication',
-            ['Green', 'Yellow', 'Red'][Math.floor(Math.random() * 3)],
             (Math.random() * 4 + 6).toFixed(1), // Score between 6.0 and 10.0
             'Team is on track with deliverables',
             'High energy and engagement across team members',

@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2, Database, Sprout } from "lucide-react";
+import { AlertCircle, CheckCircle2, Database, Sprout, RefreshCw, Wifi } from "lucide-react";
 
 export default function HelpPage() {
   // State for tracking API operations
@@ -20,6 +21,13 @@ export default function HelpPage() {
     loading: boolean;
     success?: boolean;
     message?: string;
+  }>({ loading: false });
+  
+  const [dbStatus, setDbStatus] = useState<{
+    loading: boolean;
+    connected?: boolean;
+    message?: string;
+    details?: any;
   }>({ loading: false });
 
   // Function to initialize database tables
@@ -91,150 +99,111 @@ export default function HelpPage() {
       });
     }
   };
+  
+  // Function to check database connection status
+  const checkDatabaseStatus = async () => {
+    setDbStatus({ loading: true });
+    try {
+      const response = await fetch('/api/database/status');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setDbStatus({
+          loading: false,
+          connected: data.connected,
+          message: data.message,
+          details: data.database
+        });
+      } else {
+        setDbStatus({
+          loading: false,
+          connected: false,
+          message: data.message || "Failed to check database status"
+        });
+      }
+    } catch (error) {
+      setDbStatus({
+        loading: false,
+        connected: false,
+        message: "An error occurred while checking the database connection"
+      });
+    }
+  };
+  
+  // Check database status on component mount
+  useEffect(() => {
+    checkDatabaseStatus();
+  }, []);
 
   return (
     <div className="container py-10 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-6">Help & Documentation</h1>
-      
+      <div className="mb-6">
+        <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Back to login
+        </Link>
+      </div>
       <Tabs defaultValue="database">
         <TabsList className="mb-4">
-          <TabsTrigger value="database">Database Setup</TabsTrigger>
-          <TabsTrigger value="usage">Usage Guide</TabsTrigger>
+          <TabsTrigger value="database">Database</TabsTrigger>
+          <TabsTrigger value="usage">Usage</TabsTrigger>
         </TabsList>
         
         <TabsContent value="database">
           <Card>
             <CardHeader>
-              <CardTitle>Database Setup & Initialization</CardTitle>
+              <CardTitle>Database</CardTitle>
               <CardDescription>
-                Setup your PostgreSQL database and seed it with sample data
+                Connect to your PostgreSQL database and seed it with sample data
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <section>
-                <h3 className="text-xl font-medium mb-3">Prerequisites</h3>
-                <ul className="list-disc pl-6 space-y-2">
-                  <li>PostgreSQL installed and running</li>
-                  <li>Database credentials configured</li>
-                </ul>
-              </section>
               
-              <Separator />
-              
-              <section>
-                <h3 className="text-xl font-medium mb-3">Database Configuration</h3>
-                <p className="mb-3">
-                  Create a <code className="bg-muted px-1 py-0.5 rounded">.env.local</code> file in the project root with the following variables:
-                </p>
-                <pre className="bg-muted p-4 rounded-md overflow-auto">
-                  <code>
-{`DATABASE_URL=postgresql://username:password@localhost:5432/weekly_updates
-# Replace with your actual PostgreSQL credentials`}
-                  </code>
-                </pre>
-              </section>
-              
-              <Separator />
-              
-              <section>
-                <h3 className="text-xl font-medium mb-3">Initialize Database Schema</h3>
-                <p className="mb-3">
-                  Run the migration script to create necessary tables:
-                </p>
-                <pre className="bg-muted p-4 rounded-md overflow-auto">
-                  <code>
-{`# From project root
-npm run migrate`}
-                  </code>
-                </pre>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  This will execute the SQL schema from <code className="bg-muted px-1 py-0.5 rounded">schema.sql</code> to create all required tables.
-                </p>
-              </section>
-              
-              <Separator />
-              
-              <section>
-                <h3 className="text-xl font-medium mb-3">Seed Sample Data</h3>
-                <p className="mb-3">
-                  To populate your database with sample data:
-                </p>
-                <pre className="bg-muted p-4 rounded-md overflow-auto">
-                  <code>
-{`# From project root
-npm run seed`}
-                  </code>
-                </pre>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  This will add sample users, teams, and leadership updates to help you get started.
-                </p>
-              </section>
-              
-              <Separator />
-              
-              <section>
-                <h3 className="text-xl font-medium mb-3">Sample Users for Testing</h3>
-                <p className="mb-3">The seed script creates the following test users:</p>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-border">
-                    <thead>
-                      <tr>
-                        <th className="px-4 py-2 text-left">Username</th>
-                        <th className="px-4 py-2 text-left">Password</th>
-                        <th className="px-4 py-2 text-left">Role</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      <tr>
-                        <td className="px-4 py-2">admin</td>
-                        <td className="px-4 py-2">password123</td>
-                        <td className="px-4 py-2">Administrator</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2">teamlead</td>
-                        <td className="px-4 py-2">password123</td>
-                        <td className="px-4 py-2">Team Lead</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2">manager</td>
-                        <td className="px-4 py-2">password123</td>
-                        <td className="px-4 py-2">Manager</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  <strong>Note:</strong> These are for development purposes only. Replace with secure credentials in production.
-                </p>
-              </section>
-              
-              <Separator />
-              
-              <section>
-                <h3 className="text-xl font-medium mb-3">Troubleshooting</h3>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium">Connection Issues</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Ensure PostgreSQL is running and credentials are correct in your .env.local file.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Migration Failures</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Check database logs and ensure your PostgreSQL user has appropriate permissions.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Reset Database</h4>
-                    <p className="text-sm text-muted-foreground">
-                      To reset the database, run <code className="bg-muted px-1 py-0.5 rounded">npm run reset-db</code> which will drop and recreate all tables.
-                    </p>
-                  </div>
+              <section className="mb-6">
+                <h3 className="text-xl font-medium mb-3">Database Connection Status</h3>
+                <div className="p-4 border rounded-md">
+                  {dbStatus.loading ? (
+                    <div className="flex items-center">
+                      <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                      Checking database connection...
+                    </div>
+                  ) : dbStatus.connected ? (
+                    <Alert variant="success">
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      <div>
+                        <AlertTitle>Connected</AlertTitle>
+                        <AlertDescription>{dbStatus.message}</AlertDescription>
+                        {dbStatus.details && (
+                          <div className="mt-2 text-sm">
+                            <div>Database Time: {new Date(dbStatus.details.version).toLocaleString()}</div>
+                            <div>Users Table: {dbStatus.details.tables.users.exists ? 
+                              `Exists (${dbStatus.details.tables.users.count} users)` : 
+                              "Not found"}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Alert>
+                  ) : (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4 mr-2" />
+                      <div>
+                        <AlertTitle>Connection Failed</AlertTitle>
+                        <AlertDescription>{dbStatus.message}</AlertDescription>
+                      </div>
+                    </Alert>
+                  )}
+                  <Button 
+                    onClick={checkDatabaseStatus} 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2"
+                    disabled={dbStatus.loading}
+                  >
+                    <RefreshCw className="h-3 w-3 mr-2" />
+                    Refresh Status
+                  </Button>
                 </div>
               </section>
-              
-              <Separator className="my-6" />
               
               <section>
                 <h3 className="text-xl font-medium mb-4">Quick Setup</h3>
@@ -338,16 +307,16 @@ npm run seed`}
         <TabsContent value="usage">
           <Card>
             <CardHeader>
-              <CardTitle>Usage Guide</CardTitle>
+              <CardTitle>Usage</CardTitle>
               <CardDescription>
-                Learn how to use the Weekly Leadership Update system
+                Learn how to use the system effectively
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <section>
                 <h3 className="text-xl font-medium mb-3">Getting Started</h3>
                 <p>
-                  The Weekly Leadership Update system helps team leads and managers track and report on team progress, challenges, and achievements on a weekly basis.
+                  This system helps team leads and managers track and report on team progress, challenges, and achievements on a weekly basis.
                 </p>
               </section>
               

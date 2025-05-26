@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { format, subYears, addDays, isFriday, isBefore } from "date-fns"
 
 interface HeaderSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -14,6 +16,34 @@ interface HeaderSectionProps {
 
 export default function HeaderSection({ form }: HeaderSectionProps) {
   const { register } = form
+  
+  // Generate all Fridays from a year ago to this week, in descending order
+  const fridayDates = useMemo(() => {
+    const fridays: { value: string; label: string }[] = []
+    const today = new Date()
+    const oneYearAgo = subYears(today, 1)
+    
+    // Start from today and go back to find all Fridays
+    let currentDate = today
+    
+    // If today is not Friday, find the most recent Friday
+    if (!isFriday(currentDate)) {
+      // Calculate days to go back to reach previous Friday
+      const dayOfWeek = currentDate.getDay() // 0 = Sunday, 6 = Saturday
+      const daysToSubtract = dayOfWeek === 0 ? 2 : dayOfWeek - 5
+      currentDate = addDays(currentDate, daysToSubtract <= 0 ? daysToSubtract : daysToSubtract - 7)
+    }
+    
+    // Add all Fridays, working backwards
+    while (isBefore(oneYearAgo, currentDate)) {
+      const dateValue = format(currentDate, "yyyy-MM-dd")
+      const dateLabel = format(currentDate, "MMM d, yyyy")
+      fridays.push({ value: dateValue, label: `${dateLabel} (Friday)` })
+      currentDate = addDays(currentDate, -7) // Go back one week
+    }
+    
+    return fridays
+  }, [])
 
   return (
     <Card>
@@ -34,8 +64,23 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="meta.date">Date</Label>
-            <Input id="meta.date" type="date" className="mt-1" {...register("meta.date")} />
+            <Label htmlFor="meta.date">Report Week (Friday)</Label>
+            <Select
+              onValueChange={(value) => form.setValue("meta.date", value)}
+              defaultValue={form.watch("meta.date")}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select Friday date" />
+              </SelectTrigger>
+              <SelectContent className="max-h-80">
+                {fridayDates.map((date) => (
+                  <SelectItem key={date.value} value={date.value}>
+                    {date.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">Select the Friday that marks the end of your report week</p>
           </div>
           <div>
             <Label htmlFor="meta.team_name">Team Name</Label>
