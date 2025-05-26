@@ -15,10 +15,9 @@ export async function POST(request: Request) {
     console.log(`Direct login attempt for username: ${username}`);
     
     // Log request headers for debugging
-    const headersList = headers();
-    console.log(`Request headers: ${Array.from(headersList.entries())
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(', ')}`);
+    const headersList = await headers();
+    const headersObj = Object.fromEntries(headersList.entries());
+    console.log("Request headers:", headersObj);
 
     if (!username || !password) {
       return new Response("Username and password required", { status: 400 });
@@ -43,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     // Set a session cookie
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set({
       name: "session_id",
       value: session.id,
@@ -55,11 +54,11 @@ export async function POST(request: Request) {
     });
     
     // For debugging: Log all cookies after setting
-    const allCookies = cookieStore.getAll();
+    const allCookies = await cookieStore.getAll();
     console.log(`Cookies after setting: ${allCookies.map(c => c.name).join(', ')}`);
     
     // Double-check the session cookie was set
-    const sessionCookie = cookieStore.get("session_id");
+    const sessionCookie = await cookieStore.get("session_id");
     if (sessionCookie) {
       console.log(`Confirmed session cookie set: ${sessionCookie.value.substring(0, 8)}... with path ${sessionCookie.path}`);
     } else {
