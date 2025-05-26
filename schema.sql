@@ -75,8 +75,6 @@ CREATE TABLE delivery_performance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     update_id UUID NOT NULL REFERENCES weekly_updates(id) ON DELETE CASCADE,
     workload_balance VARCHAR(10) CHECK (workload_balance IN ('TooMuch', 'TooLittle', 'JustRight')),
-    velocity_delta INTEGER,
-    defects INTEGER,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

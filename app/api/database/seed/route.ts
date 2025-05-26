@@ -187,14 +187,12 @@ export async function POST() {
         // Create delivery performance
         const perfInsertResult = await pool.query(
           `INSERT INTO delivery_performance 
-          (update_id, workload_balance, velocity_delta, defects) 
-          VALUES ($1, $2, $3, $4)
+          (update_id, workload_balance) 
+          VALUES ($1, $2)
           RETURNING id`,
           [
             updateId,
-            ['TooMuch', 'JustRight', 'TooLittle'][Math.floor(Math.random() * 3)],
-            Math.floor(Math.random() * 10) - 5, // Between -5 and +5
-            Math.floor(Math.random() * 5) // 0-4 defects
+            ['TooMuch', 'JustRight', 'TooLittle'][Math.floor(Math.random() * 3)]
           ]
         );
         

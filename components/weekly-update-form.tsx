@@ -47,10 +47,6 @@ export interface WeeklyUpdateFormData {
     accomplishments: string[]
     misses_delays: string[]
     workload_balance: WorkloadBalance
-    kpi_snapshot: {
-      velocity_delta: number
-      defects: number
-    }
   }
 
   // Stakeholder Engagement
@@ -142,10 +138,6 @@ export default function WeeklyUpdateForm() {
       accomplishments: [""],
       misses_delays: [""],
       workload_balance: "JustRight",
-      kpi_snapshot: {
-        velocity_delta: 0,
-        defects: 0,
-      },
     },
     stakeholder_engagement: {
       feedback_notes: [""],

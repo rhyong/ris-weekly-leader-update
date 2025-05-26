@@ -117,30 +117,6 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
           </RadioGroup>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="delivery_performance.kpi_snapshot.velocity_delta">Velocity Delta (%)</Label>
-            <Input
-              id="delivery_performance.kpi_snapshot.velocity_delta"
-              type="number"
-              className="mt-1"
-              {...register("delivery_performance.kpi_snapshot.velocity_delta", {
-                valueAsNumber: true,
-              })}
-            />
-          </div>
-          <div>
-            <Label htmlFor="delivery_performance.kpi_snapshot.defects">Defects</Label>
-            <Input
-              id="delivery_performance.kpi_snapshot.defects"
-              type="number"
-              className="mt-1"
-              {...register("delivery_performance.kpi_snapshot.defects", {
-                valueAsNumber: true,
-              })}
-            />
-          </div>
-        </div>
       </CardContent>
     </Card>
   )

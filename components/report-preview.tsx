@@ -130,13 +130,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Delivery Performance</h3>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="font-mono">
-                Velocity: {delivery_performance.kpi_snapshot.velocity_delta > 0 ? "+" : ""}
-                {delivery_performance.kpi_snapshot.velocity_delta}%
-              </Badge>
-              <Badge variant="outline" className="font-mono">
-                Defects: {delivery_performance.kpi_snapshot.defects}
-              </Badge>
               <TrafficLightIndicator
                 value={
                   delivery_performance.workload_balance === "JustRight"
