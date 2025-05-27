@@ -67,7 +67,7 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
             <Label htmlFor="meta.date">Report Week (Friday)</Label>
             <Select
               onValueChange={(value) => form.setValue("meta.date", value)}
-              defaultValue={form.watch("meta.date")}
+              value={form.watch("meta.date")}
             >
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select Friday date" />
@@ -86,7 +86,7 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
             <Label htmlFor="meta.team_name">Team Name</Label>
             <Select
               onValueChange={(value) => form.setValue("meta.team_name", value)}
-              defaultValue={form.watch("meta.team_name")}
+              value={form.watch("meta.team_name")}
             >
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select team" />
@@ -106,7 +106,7 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
           <Label htmlFor="meta.client_org">Client Organization</Label>
           <Select
             onValueChange={(value) => form.setValue("meta.client_org", value)}
-            defaultValue={form.watch("meta.client_org")}
+            value={form.watch("meta.client_org")}
           >
             <SelectTrigger className="mt-1">
               <SelectValue placeholder="Select client" />

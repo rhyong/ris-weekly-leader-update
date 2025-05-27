@@ -30,9 +30,9 @@ export default function WeeklyUpdateView({
     window.print()
   }
 
-  const formattedDate = date ? format(new Date(date), "MMMM d, yyyy") : format(new Date(data.meta.date), "MMMM d, yyyy")
-  const displayTeamName = teamName || data.meta.team_name
-  const displayClientOrg = clientOrg || data.meta.client_org
+  const formattedDate = date ? format(new Date(date), "MMMM d, yyyy") : (data.meta?.date ? format(new Date(data.meta.date), "MMMM d, yyyy") : format(new Date(), "MMMM d, yyyy"))
+  const displayTeamName = teamName || data.meta?.team_name || "Team"
+  const displayClientOrg = clientOrg || data.meta?.client_org || "Organization"
 
   return (
     <div className={`space-y-6 ${className}`}>

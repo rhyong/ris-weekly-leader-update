@@ -64,7 +64,7 @@ export default function UpdateViewPage() {
             <p>Loading update...</p>
           </div>
         </div>
-      ) : update ? (
+      ) : update && update.data ? (
         <>
           <WeeklyUpdateView
             data={update.data as WeeklyUpdateFormData}

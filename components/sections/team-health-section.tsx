@@ -16,7 +16,8 @@ interface TeamHealthSectionProps {
 
 export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
   const { register, watch, setValue } = form
-  const sentimentScore = watch("team_health.sentiment_score")
+  const watchedScore = watch("team_health.sentiment_score")
+  const sentimentScore = typeof watchedScore === 'number' ? watchedScore : 3.5 // Ensure it's a number
 
   return (
     <Card>
@@ -68,7 +69,7 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
         <div>
           <div className="flex justify-between">
             <Label>Sentiment Score (auto from chat analysis)</Label>
-            <span className="font-medium">{sentimentScore.toFixed(1)}</span>
+            <span className="font-medium">{typeof sentimentScore === 'number' ? sentimentScore.toFixed(1) : '3.5'}</span>
           </div>
           <Slider
             value={[sentimentScore]}

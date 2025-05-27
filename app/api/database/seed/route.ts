@@ -176,7 +176,7 @@ export async function POST() {
           [
             updateId,
             'Team is working well together with good communication',
-            (Math.random() * 4 + 6).toFixed(1), // Score between 6.0 and 10.0
+            Number((Math.random() * 4 + 6).toFixed(1)), // Score between 6.0 and 10.0
             'Team is on track with deliverables',
             'High energy and engagement across team members',
             'Roles are well defined and understood'

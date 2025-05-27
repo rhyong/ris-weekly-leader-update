@@ -23,41 +23,41 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
     team_members_updates,
   } = data
 
-  // Filter out empty items
-  const filteredAccomplishments = delivery_performance.accomplishments.filter((item) => item.trim() !== "")
-  const filteredMissesDelays = delivery_performance.misses_delays.filter((item) => item.trim() !== "")
-  const filteredFeedbackNotes = stakeholder_engagement.feedback_notes.filter((item) => item.trim() !== "")
-  const filteredExpectationShift = stakeholder_engagement.expectation_shift.filter((item) => item.trim() !== "")
-  const filteredRisks = risks_escalations.risks.filter((risk) => risk.title.trim() !== "")
-  const filteredEscalations = risks_escalations.escalations.filter((item) => item.trim() !== "")
-  const filteredWins = opportunities_wins.wins.filter((item) => item.trim() !== "")
-  const filteredGrowthOps = opportunities_wins.growth_ops.filter((item) => item.trim() !== "")
-  const filteredRequests = support_needed.requests.filter((item) => item.trim() !== "")
+  // Filter out empty items - adding null/undefined checks for all properties
+  const filteredAccomplishments = delivery_performance?.accomplishments?.filter((item) => item?.trim() !== "") || []
+  const filteredMissesDelays = delivery_performance?.misses_delays?.filter((item) => item?.trim() !== "") || []
+  const filteredFeedbackNotes = stakeholder_engagement?.feedback_notes?.filter((item) => item?.trim() !== "") || []
+  const filteredExpectationShift = stakeholder_engagement?.expectation_shift?.filter((item) => item?.trim() !== "") || []
+  const filteredRisks = risks_escalations?.risks?.filter((risk) => risk?.title?.trim() !== "") || []
+  const filteredEscalations = risks_escalations?.escalations?.filter((item) => item?.trim() !== "") || []
+  const filteredWins = opportunities_wins?.wins?.filter((item) => item?.trim() !== "") || []
+  const filteredGrowthOps = opportunities_wins?.growth_ops?.filter((item) => item?.trim() !== "") || []
+  const filteredRequests = support_needed?.requests?.filter((item) => item?.trim() !== "") || []
 
-  // Personal updates
-  const filteredPersonalWins = personal_updates.personal_wins.filter((item) => item.trim() !== "")
-  const filteredReflections = personal_updates.reflections.filter((item) => item.trim() !== "")
-  const filteredGoals = personal_updates.goals.filter((goal) => goal.description.trim() !== "")
+  // Personal updates - adding null/undefined checks
+  const filteredPersonalWins = personal_updates?.personal_wins?.filter((item) => item?.trim() !== "") || []
+  const filteredReflections = personal_updates?.reflections?.filter((item) => item?.trim() !== "") || []
+  const filteredGoals = personal_updates?.goals?.filter((goal) => goal?.description?.trim() !== "") || []
   const hasLeadershipFocus =
-    personal_updates.leadership_focus.skill.trim() !== "" || personal_updates.leadership_focus.practice.trim() !== ""
+    personal_updates?.leadership_focus?.skill?.trim() !== "" || personal_updates?.leadership_focus?.practice?.trim() !== ""
 
-  // Team members updates
-  const filteredTopContributors = team_members_updates.top_contributors.filter(
-    (contributor) => contributor.name.trim() !== "" || contributor.achievement.trim() !== "",
-  )
-  const filteredMembersNeedingAttention = team_members_updates.members_needing_attention.filter(
-    (member) => member.name.trim() !== "" || member.issue.trim() !== "",
-  )
+  // Team members updates - adding null/undefined checks
+  const filteredTopContributors = team_members_updates?.top_contributors?.filter(
+    (contributor) => contributor?.name?.trim() !== "" || contributor?.achievement?.trim() !== "",
+  ) || []
+  const filteredMembersNeedingAttention = team_members_updates?.members_needing_attention?.filter(
+    (member) => member?.name?.trim() !== "" || member?.issue?.trim() !== "",
+  ) || []
 
   return (
     <div className="space-y-6 print:text-sm">
       {/* Header */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">{meta.team_name} Weekly Update</h2>
+          <h2 className="text-2xl font-bold">{meta?.team_name || 'Team'} Weekly Update</h2>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">{meta.date}</p>
-            <p className="text-sm text-muted-foreground">{meta.client_org}</p>
+            <p className="text-sm text-muted-foreground">{meta?.date || new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-muted-foreground">{meta?.client_org || 'Organization'}</p>
           </div>
         </div>
 
@@ -71,50 +71,57 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
       <Separator />
 
       {/* Team Health */}
-      {(team_health.owner_input ||
-        team_health.overall_status ||
-        team_health.energy_engagement ||
-        team_health.roles_alignment) && (
+      {(team_health?.owner_input ||
+        team_health?.overall_status ||
+        team_health?.energy_engagement ||
+        team_health?.roles_alignment) && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Team Health</h3>
             <div className="flex items-center space-x-3">
               <div className="w-32">
-                <p className="text-xs text-right mb-1">Sentiment: {team_health.sentiment_score.toFixed(1)}</p>
-                <SentimentBar value={team_health.sentiment_score} />
+                <p className="text-xs text-right mb-1">
+                  Sentiment: {typeof team_health?.sentiment_score === 'number' 
+                    ? team_health.sentiment_score.toFixed(1) 
+                    : '3.5'}
+                </p>
+                <SentimentBar value={typeof team_health?.sentiment_score === 'number' 
+                  ? team_health.sentiment_score 
+                  : 3.5} 
+                />
               </div>
             </div>
           </div>
 
-          {team_health.owner_input && (
+          {team_health?.owner_input && (
             <div>
               <h4 className="text-sm font-medium">Summary</h4>
               <p>{team_health.owner_input}</p>
             </div>
           )}
 
-          {team_health.overall_status && (
+          {team_health?.overall_status && (
             <div>
               <h4 className="text-sm font-medium">Overall Status</h4>
               <p>{team_health.overall_status}</p>
             </div>
           )}
 
-          {team_health.energy_engagement && (
+          {team_health?.energy_engagement && (
             <div>
               <h4 className="text-sm font-medium">Energy & Engagement</h4>
               <p>{team_health.energy_engagement}</p>
             </div>
           )}
 
-          {team_health.roles_alignment && (
+          {team_health?.roles_alignment && (
             <div>
               <h4 className="text-sm font-medium">Roles & Responsibilities</h4>
               <p>{team_health.roles_alignment}</p>
             </div>
           )}
 
-          {team_members_updates.people_changes && (
+          {team_members_updates?.people_changes && (
             <div>
               <h4 className="text-sm font-medium">People Changes</h4>
               <p>{team_members_updates.people_changes}</p>
@@ -131,9 +138,9 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
             <div className="flex items-center space-x-2">
               <TrafficLightIndicator
                 value={
-                  delivery_performance.workload_balance === "JustRight"
+                  delivery_performance?.workload_balance === "JustRight"
                     ? "Green"
-                    : delivery_performance.workload_balance === "TooLittle"
+                    : delivery_performance?.workload_balance === "TooLittle"
                       ? "Yellow"
                       : "Red"
                 }
@@ -171,18 +178,18 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Stakeholder Engagement</h3>
             <div className="flex items-center space-x-2">
-              {stakeholder_engagement.stakeholder_nps !== null && (
+              {stakeholder_engagement?.stakeholder_nps !== null && typeof stakeholder_engagement.stakeholder_nps === 'number' && (
                 <Badge variant="outline" className="font-mono">
-                  NPS: {stakeholder_engagement.stakeholder_nps.toFixed(1)}
+                  NPS: {typeof stakeholder_engagement.stakeholder_nps === 'number' ? stakeholder_engagement.stakeholder_nps.toFixed(1) : 'N/A'}
                 </Badge>
               )}
               <TrafficLightIndicator
                 value={
-                  stakeholder_engagement.stakeholder_nps === null
+                  stakeholder_engagement?.stakeholder_nps === null || typeof stakeholder_engagement?.stakeholder_nps !== 'number'
                     ? "Green"
-                    : stakeholder_engagement.stakeholder_nps < 3
+                    : typeof stakeholder_engagement.stakeholder_nps === 'number' && stakeholder_engagement.stakeholder_nps < 3
                       ? "Red"
-                      : stakeholder_engagement.stakeholder_nps < 4
+                      : typeof stakeholder_engagement.stakeholder_nps === 'number' && stakeholder_engagement.stakeholder_nps < 4
                         ? "Yellow"
                         : "Green"
                 }
@@ -379,7 +386,7 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
         hasLeadershipFocus ||
         filteredReflections.length > 0 ||
         filteredGoals.length > 0 ||
-        personal_updates.support_needed) && (
+        personal_updates?.support_needed) && (
         <>
           <Separator className="my-6" />
           <div className="space-y-6">
@@ -401,13 +408,13 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
             {hasLeadershipFocus && (
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Leadership Focus</h3>
-                {personal_updates.leadership_focus.skill && (
+                {personal_updates?.leadership_focus?.skill && (
                   <div>
                     <h4 className="text-sm font-medium">Focus Area</h4>
                     <p>{personal_updates.leadership_focus.skill}</p>
                   </div>
                 )}
-                {personal_updates.leadership_focus.practice && (
+                {personal_updates?.leadership_focus?.practice && (
                   <div>
                     <h4 className="text-sm font-medium">How I'm Improving</h4>
                     <p>{personal_updates.leadership_focus.practice}</p>
@@ -458,7 +465,7 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
             )}
 
             {/* Support Needed */}
-            {personal_updates.support_needed && (
+            {personal_updates?.support_needed && (
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Support or Feedback Needed</h3>
                 <p>{personal_updates.support_needed}</p>

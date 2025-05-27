@@ -17,8 +17,8 @@ interface TeamMembersUpdatesSectionProps {
 export default function TeamMembersUpdatesSection({ form }: TeamMembersUpdatesSectionProps) {
   const { register, watch, setValue } = form
   const peopleChanges = watch("team_members_updates.people_changes")
-  const topContributors = watch("team_members_updates.top_contributors")
-  const membersNeedingAttention = watch("team_members_updates.members_needing_attention")
+  const topContributors = watch("team_members_updates.top_contributors") || []
+  const membersNeedingAttention = watch("team_members_updates.members_needing_attention") || []
 
   // Top Contributors
   const addTopContributor = () => {

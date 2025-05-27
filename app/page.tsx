@@ -32,7 +32,7 @@ export default function Dashboard() {
       loggedInFromLocalStorage 
     });
     
-    setIsAuthenticated(!!user || loggedInFromLocalStorage);
+    setIsAuthenticated(!!user || !!loggedInFromLocalStorage);
   }, [user]);
   
   useEffect(() => {

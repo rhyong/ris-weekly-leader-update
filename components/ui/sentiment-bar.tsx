@@ -1,11 +1,12 @@
 interface SentimentBarProps {
-  value: number
+  value: number | null | undefined
   className?: string
 }
 
 export default function SentimentBar({ value, className }: SentimentBarProps) {
-  // Ensure value is between 1 and 5
-  const clampedValue = Math.max(1, Math.min(5, value))
+  // Ensure value is a number and between 1 and 5
+  const numValue = typeof value === 'number' ? value : 3.5
+  const clampedValue = Math.max(1, Math.min(5, numValue))
 
   // Calculate position percentage (0-100%)
   const position = ((clampedValue - 1) / 4) * 100

@@ -80,8 +80,35 @@ export async function getClient() {
   return client;
 }
 
+/**
+ * Begin a database transaction
+ */
+export async function beginTransaction(): Promise<void> {
+  await query('BEGIN');
+  console.log("Transaction started");
+}
+
+/**
+ * Commit a database transaction
+ */
+export async function commitTransaction(): Promise<void> {
+  await query('COMMIT');
+  console.log("Transaction committed");
+}
+
+/**
+ * Rollback a database transaction
+ */
+export async function rollbackTransaction(): Promise<void> {
+  await query('ROLLBACK');
+  console.log("Transaction rolled back");
+}
+
 export default {
   query,
   getClient,
   hashPassword,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
 };
