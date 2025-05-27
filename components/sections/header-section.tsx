@@ -17,30 +17,48 @@ interface HeaderSectionProps {
 export default function HeaderSection({ form }: HeaderSectionProps) {
   const { register } = form
   
-  // Generate all Fridays from a year ago to this week, in descending order
+  // Generate the next Friday plus two previous Fridays
   const fridayDates = useMemo(() => {
     const fridays: { value: string; label: string }[] = []
     const today = new Date()
-    const oneYearAgo = subYears(today, 1)
     
-    // Start from today and go back to find all Fridays
-    let currentDate = today
+    // Find the next Friday
+    let nextFriday = new Date(today)
+    const dayOfWeek = today.getDay() // 0 = Sunday, 6 = Saturday
     
-    // If today is not Friday, find the most recent Friday
-    if (!isFriday(currentDate)) {
-      // Calculate days to go back to reach previous Friday
-      const dayOfWeek = currentDate.getDay() // 0 = Sunday, 6 = Saturday
+    // If today is Friday, next Friday is in 7 days
+    // Otherwise, calculate days to add to reach next Friday
+    const daysToAdd = isFriday(today) ? 7 : ((7 - dayOfWeek + 5) % 7)
+    nextFriday = addDays(today, daysToAdd)
+    
+    // Find current/most recent Friday
+    let currentFriday = new Date(today)
+    // If today is Friday, currentFriday is today
+    // Otherwise, calculate days to subtract to reach previous Friday
+    if (!isFriday(currentFriday)) {
       const daysToSubtract = dayOfWeek === 0 ? 2 : dayOfWeek - 5
-      currentDate = addDays(currentDate, daysToSubtract <= 0 ? daysToSubtract : daysToSubtract - 7)
+      currentFriday = addDays(currentFriday, daysToSubtract <= 0 ? daysToSubtract : daysToSubtract - 7)
     }
     
-    // Add all Fridays, working backwards
-    while (isBefore(oneYearAgo, currentDate)) {
-      const dateValue = format(currentDate, "yyyy-MM-dd")
-      const dateLabel = format(currentDate, "MMM d, yyyy")
-      fridays.push({ value: dateValue, label: `${dateLabel} (Friday)` })
-      currentDate = addDays(currentDate, -7) // Go back one week
-    }
+    // Find the previous Friday
+    const previousFriday = addDays(currentFriday, -7)
+    
+    // Find the Friday before the previous one
+    const olderFriday = addDays(previousFriday, -7)
+    
+    // Add the four Fridays to our array, from newest to oldest
+    const allFridays = [nextFriday, currentFriday, previousFriday, olderFriday]
+    
+    allFridays.forEach(date => {
+      const dateValue = format(date, "yyyy-MM-dd")
+      const dateLabel = format(date, "MMM d, yyyy")
+      fridays.push({ 
+        value: dateValue, 
+        label: date === nextFriday ? `${dateLabel} (Next Friday)` : 
+               date === currentFriday ? `${dateLabel} (Current Friday)` : 
+               `${dateLabel} (Friday)` 
+      })
+    })
     
     return fridays
   }, [])

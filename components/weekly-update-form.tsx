@@ -127,21 +127,17 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
   const { user } = useAuth()
   const router = useRouter()
   
-  // Get the most recent Friday for default date
-  const getMostRecentFriday = useMemo(() => {
+  // Get the next Friday for default date
+  const getNextFriday = useMemo(() => {
     const today = new Date()
     
-    // If today is Friday, use today's date
-    if (isFriday(today)) {
-      return format(today, "yyyy-MM-dd")
-    }
-    
-    // Otherwise, find the most recent Friday
+    // If today is Friday, next Friday is in 7 days
+    // Otherwise, calculate days to add to reach next Friday
     const dayOfWeek = today.getDay() // 0 = Sunday, 6 = Saturday
-    const daysToSubtract = dayOfWeek === 0 ? 2 : dayOfWeek - 5
-    const previousFriday = addDays(today, daysToSubtract <= 0 ? daysToSubtract : daysToSubtract - 7)
+    const daysToAdd = isFriday(today) ? 7 : ((7 - dayOfWeek + 5) % 7)
+    const nextFriday = addDays(today, daysToAdd)
     
-    return format(previousFriday, "yyyy-MM-dd")
+    return format(nextFriday, "yyyy-MM-dd")
   }, [])
 
   // Add effects for managing savedUpdateId
@@ -174,7 +170,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
   const [formData, setFormData] = useState<WeeklyUpdateFormData>({
     top_3_bullets: "",
     meta: {
-      date: getMostRecentFriday,
+      date: getNextFriday,
       team_name: "",
       client_org: "",
     },
@@ -323,7 +319,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
   function getDefaultDataStructure() {
     return {
       meta: {
-        date: getMostRecentFriday,
+        date: getNextFriday,
         team_name: "",
         client_org: "",
       },
@@ -697,8 +693,8 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
   
   // Generate test data for each section
   const generateTestData = (section: string) => {
-    // Use the most recent Friday for test data
-    const fridayDate = getMostRecentFriday;
+    // Use the next Friday for test data
+    const fridayDate = getNextFriday;
     
     // Common data for all sections
     const commonData = {
