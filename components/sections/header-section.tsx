@@ -17,10 +17,28 @@ interface HeaderSectionProps {
 export default function HeaderSection({ form }: HeaderSectionProps) {
   const { register } = form
   
-  // Generate the next Friday plus two previous Fridays
+  // Generate available Fridays including the current form date if it exists
   const fridayDates = useMemo(() => {
     const fridays: { value: string; label: string }[] = []
     const today = new Date()
+    
+    // Get the current date value from the form
+    const currentDateValue = form.watch("meta.date")
+    let currentDateObj: Date | null = null
+    
+    // If there's a current date value, parse it and create a Date object
+    if (currentDateValue) {
+      try {
+        currentDateObj = new Date(currentDateValue)
+        // Validate that the date is valid
+        if (isNaN(currentDateObj.getTime())) {
+          currentDateObj = null
+        }
+      } catch (e) {
+        console.error("Error parsing date:", e)
+        currentDateObj = null
+      }
+    }
     
     // Find the next Friday
     let nextFriday = new Date(today)
@@ -46,22 +64,47 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
     // Find the Friday before the previous one
     const olderFriday = addDays(previousFriday, -7)
     
-    // Add the four Fridays to our array, from newest to oldest
-    const allFridays = [nextFriday, currentFriday, previousFriday, olderFriday]
+    // Add the standard four Fridays to our array
+    let allFridays = [nextFriday, currentFriday, previousFriday, olderFriday]
     
+    // If we have a current date that's not in our list, add it
+    if (currentDateObj && !allFridays.some(date => 
+      format(date, "yyyy-MM-dd") === format(currentDateObj as Date, "yyyy-MM-dd")
+    )) {
+      allFridays.push(currentDateObj)
+    }
+    
+    // Sort dates in descending order (newest first)
+    allFridays.sort((a, b) => b.getTime() - a.getTime())
+    
+    // Convert dates to option objects
     allFridays.forEach(date => {
       const dateValue = format(date, "yyyy-MM-dd")
       const dateLabel = format(date, "MMM d, yyyy")
-      fridays.push({ 
-        value: dateValue, 
-        label: date === nextFriday ? `${dateLabel} (Next Friday)` : 
-               date === currentFriday ? `${dateLabel} (Current Friday)` : 
-               `${dateLabel} (Friday)` 
-      })
+      
+      let label = `${dateLabel} (Friday)`
+      
+      // Add special labels for next and current Friday
+      if (format(date, "yyyy-MM-dd") === format(nextFriday, "yyyy-MM-dd")) {
+        label = `${dateLabel} (Next Friday)`
+      } else if (format(date, "yyyy-MM-dd") === format(currentFriday, "yyyy-MM-dd")) {
+        label = `${dateLabel} (Current Friday)`
+      } 
+      // Add special label for the form's date if it's different from standard Fridays
+      else if (currentDateObj && 
+               format(date, "yyyy-MM-dd") === format(currentDateObj, "yyyy-MM-dd") &&
+               format(date, "yyyy-MM-dd") !== format(nextFriday, "yyyy-MM-dd") &&
+               format(date, "yyyy-MM-dd") !== format(currentFriday, "yyyy-MM-dd") &&
+               format(date, "yyyy-MM-dd") !== format(previousFriday, "yyyy-MM-dd") &&
+               format(date, "yyyy-MM-dd") !== format(olderFriday, "yyyy-MM-dd")) {
+        label = `${dateLabel} (Selected Date)`
+      }
+      
+      fridays.push({ value: dateValue, label })
     })
     
     return fridays
-  }, [])
+  }, [form.watch("meta.date")])
 
   return (
     <Card>

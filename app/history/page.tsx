@@ -138,7 +138,17 @@ export default function HistoryPage() {
                       {update.team_name} • {update.client_org}
                     </CardDescription>
                   </div>
-                  <Button onClick={() => viewUpdate(update.id)}>View</Button>
+                  <div className="flex gap-2">
+                    {(user?.role === "Administrator" || user?.role === "Manager") && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => router.push(`/update/${update.id}/edit`)}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                    <Button onClick={() => viewUpdate(update.id)}>View</Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-6">
