@@ -78,7 +78,7 @@ export default function EditWeeklyUpdate() {
       <WeeklyUpdateForm 
         isNewUpdate={false} 
         existingUpdateId={params.id as string} 
-        initialActiveTab="members"
+        initialActiveTab="edit"
       />
     </div>
   )
