@@ -908,8 +908,8 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
           </TabsList>
 
           <TabsContent value="edit">
-            {/* Only show success message if hasInitialSave is true AND there is a savedUpdateId */}
-            {!hasInitialSave || !savedUpdateId ? (
+            {/* Only show warning message for new updates that haven't been saved */}
+            {isNewUpdate && (!hasInitialSave || !savedUpdateId) && (
               <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-6 dark:bg-amber-950 dark:border-amber-800">
                 <p className="text-amber-800 dark:text-amber-300 text-sm flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -917,17 +917,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
                   </svg>
                   <span>
                     <strong>Important:</strong> Save this tab first to unlock Team Members, Personal Updates, and Review Report tabs.
-                  </span>
-                </p>
-              </div>
-            ) : (
-              <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6 dark:bg-green-950 dark:border-green-800 animate-fadeIn">
-                <p className="text-green-800 dark:text-green-300 text-sm flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>
-                    <strong>Success:</strong> All tabs are now unlocked! You can proceed to edit Team Members and Personal Updates.
                   </span>
                 </p>
               </div>
