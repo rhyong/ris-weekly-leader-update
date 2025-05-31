@@ -324,15 +324,17 @@ INSERT INTO users (username, password_hash, name, role) VALUES
 ('testuser', '$2b$10$rM7Qc8ynOdwfkRr8fIPeRe6wUEVK0K1qXLf.Yz5LYxO0tK4QW4kOi', 'Test User', 'team_lead');
 
 INSERT INTO teams (name, description) VALUES 
-('Frontend Platform', 'Frontend development team'),
-('Backend Services', 'Backend development team'),
-('Mobile Development', 'Mobile app development team'),
-('DevOps', 'Infrastructure and operations team'),
-('QA & Testing', 'Quality assurance team');
+('Zenith', `Greg Presland's team`),
+('Titan', `Aady Sridhar's team`),
+('Enigma', `Mirdul Oli's team`),
+('Nova', `Shane Lessard's team`),
+('Team Cruz', `Anne Cruz's team`),
+('Team Singh', `Manjit Singh's team`),
+('Team Stranianek', `Marta Stranianek's team`);
 
 INSERT INTO organizations (name, description) VALUES 
-('Acme Corp', 'Main client organization'),
-('Globex Industries', 'Secondary client organization'),
-('Initech', 'Technology client'),
-('Umbrella Corporation', 'Healthcare client'),
-('Stark Industries', 'Manufacturing client');
+('Rocket - CX - RMA', 'Rocket - CX - RMA'),
+('Rocket - CX - RMS', 'Rocket - CX - RMS'),
+('Rocket Close', 'Rocket Close'),
+('Rocket Pro', 'Rocket Pro'),
+('Rocket - CX', 'Rocket - CX');
