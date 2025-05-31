@@ -60,6 +60,17 @@ export default function Dashboard() {
         
         if (!response.ok) {
           console.error("Dashboard: Failed to fetch updates:", response.status);
+          // If we get a 401 Unauthorized, we need to redirect to login
+          if (response.status === 401) {
+            console.log("Dashboard: Unauthorized, user needs to log in");
+            setRecentUpdates([]);
+            // Clear any stored authentication data
+            if (typeof localStorage !== 'undefined') {
+              localStorage.removeItem('user_data');
+              localStorage.removeItem('logged_in');
+              localStorage.removeItem('session_id');
+            }
+          }
           return;
         }
         

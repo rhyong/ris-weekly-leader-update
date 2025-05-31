@@ -670,20 +670,8 @@ export async function saveUpdate(
   data: any,
   updateId?: string
 ): Promise<any> {
-  // Don't allow preview-user to save updates to the database
-  if (userId === "preview-user") {
-    console.log("Preview user cannot save updates to the database");
-    return {
-      id: randomUUID(),
-      userId,
-      weekDate,
-      teamName,
-      clientOrg,
-      data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-  }
+  // This check is now handled by the API route
+  // Preview users are rejected before this function is called
 
   try {
     console.log(`Saving update for user ${userId}, date ${weekDate}, team ${teamName}`);

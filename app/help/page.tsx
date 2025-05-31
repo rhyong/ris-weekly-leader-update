@@ -23,11 +23,7 @@ export default function HelpPage() {
     message?: string;
   }>({ loading: false });
   
-  const [seedUsersStatus, setSeedUsersStatus] = useState<{
-    loading: boolean;
-    success?: boolean;
-    message?: string;
-  }>({ loading: false });
+  // Removed seedUsersStatus state
   
   const [dbStatus, setDbStatus] = useState<{
     loading: boolean;
@@ -106,40 +102,7 @@ export default function HelpPage() {
     }
   };
   
-  // Function to seed only user data
-  const handleSeedUsersOnly = async () => {
-    setSeedUsersStatus({ loading: true });
-    try {
-      const response = await fetch('/api/database/seed-users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setSeedUsersStatus({ 
-          loading: false, 
-          success: true, 
-          message: data.message || "User data seeded successfully" 
-        });
-      } else {
-        setSeedUsersStatus({ 
-          loading: false, 
-          success: false, 
-          message: data.message || "Failed to seed user data" 
-        });
-      }
-    } catch (error) {
-      setSeedUsersStatus({ 
-        loading: false, 
-        success: false, 
-        message: "An error occurred while seeding user data" 
-      });
-    }
-  };
+  // Removed handleSeedUsersOnly function
   
   // Function to check database connection status
   const checkDatabaseStatus = async () => {
@@ -302,38 +265,19 @@ export default function HelpPage() {
                     <div className="flex flex-col gap-2">
                       <Button 
                         onClick={handleSeedDatabase}
-                        disabled={seedStatus.loading || seedUsersStatus.loading || (initializeStatus.success === undefined)}
+                        disabled={seedStatus.loading || (initializeStatus.success === undefined)}
                         className="w-full"
                         variant={initializeStatus.success === undefined ? "secondary" : "default"}
                       >
                         {seedStatus.loading ? (
                           <span className="flex items-center gap-2">
                             <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                            Seeding All Data...
+                            Seeding Data...
                           </span>
                         ) : (
                           <span className="flex items-center gap-2">
                             <Sprout className="h-4 w-4" />
-                            Seed All Sample Data
-                          </span>
-                        )}
-                      </Button>
-
-                      <Button 
-                        onClick={handleSeedUsersOnly}
-                        disabled={seedUsersStatus.loading || seedStatus.loading || (initializeStatus.success === undefined)}
-                        className="w-full"
-                        variant="outline"
-                      >
-                        {seedUsersStatus.loading ? (
-                          <span className="flex items-center gap-2">
-                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                            Seeding Users...
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <Sprout className="h-4 w-4" />
-                            Seed Users Only
+                            Seed Sample Data
                           </span>
                         )}
                       </Button>
@@ -355,21 +299,7 @@ export default function HelpPage() {
                       </Alert>
                     )}
                     
-                    {seedUsersStatus.message && (
-                      <Alert variant={seedUsersStatus.success ? "default" : "destructive"}>
-                        <div className="flex items-start gap-2">
-                          {seedUsersStatus.success ? (
-                            <CheckCircle2 className="h-4 w-4 mt-0.5" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 mt-0.5" />
-                          )}
-                          <div>
-                            <AlertTitle>{seedUsersStatus.success ? "Success" : "Error"}</AlertTitle>
-                            <AlertDescription>{seedUsersStatus.message}</AlertDescription>
-                          </div>
-                        </div>
-                      </Alert>
-                    )}
+                    {/* Removed seedUsersStatus alert */}
                   </div>
                 </div>
               </section>

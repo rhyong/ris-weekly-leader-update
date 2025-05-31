@@ -11,56 +11,26 @@ export async function GET() {
     const cookieStore = await cookies();
     const sessionId = cookieStore.get("session_id")?.value;
 
-    // If there's no session, return demo data for the preview
+    // If there's no session, return an error
     if (!sessionId) {
-      console.log("No session found, returning demo data");
-      const demoUpdates = [
-        {
-          id: "demo-1",
-          week_date: "2025-05-12",
-          team_name: "Frontend Platform",
-          client_org: "Acme Corp",
-          created_at: "2025-05-12T10:30:00Z",
-          updated_at: "2025-05-12T14:45:00Z",
-        },
-        {
-          id: "demo-2",
-          week_date: "2025-05-05",
-          team_name: "Frontend Platform",
-          client_org: "Acme Corp",
-          created_at: "2025-05-05T09:15:00Z",
-          updated_at: "2025-05-05T16:30:00Z",
-        },
-      ];
-      return NextResponse.json(demoUpdates);
+      console.log("No session found, returning authentication error");
+      return NextResponse.json({ 
+        error: "Authentication required", 
+        message: "You must be logged in to view updates"
+      }, { status: 401 });
     }
 
     // Find the session from the database
     const session = await findSessionById(sessionId);
 
     if (!session) {
-      console.log("Invalid session, returning demo data");
+      console.log("Invalid session, deleting cookie and returning error");
       cookieStore.delete("session_id");
-      // Return demo data for invalid session
-      const demoUpdates = [
-        {
-          id: "demo-1",
-          week_date: "2025-05-12",
-          team_name: "Frontend Platform",
-          client_org: "Acme Corp",
-          created_at: "2025-05-12T10:30:00Z",
-          updated_at: "2025-05-12T14:45:00Z",
-        },
-        {
-          id: "demo-2",
-          week_date: "2025-05-05",
-          team_name: "Frontend Platform",
-          client_org: "Acme Corp",
-          created_at: "2025-05-05T09:15:00Z",
-          updated_at: "2025-05-05T16:30:00Z",
-        },
-      ];
-      return NextResponse.json(demoUpdates);
+      // Return error for invalid session
+      return NextResponse.json({ 
+        error: "Invalid session", 
+        message: "Your session has expired or is invalid. Please log in again."
+      }, { status: 401 });
     }
 
     // Get updates for this user from the database
@@ -83,21 +53,29 @@ export async function POST(request: Request) {
     const sessionId = cookieStore.get("session_id")?.value;
     console.log("Session ID from cookies:", sessionId ? "Found" : "Not found");
     
-    // Default to preview-user for unauthenticated requests
-    let userId = "preview-user";
-
-    // If there's a valid session, use the real user ID from the database
-    if (sessionId) {
-      const session = await findSessionById(sessionId);
-      if (session) {
-        userId = session.user_id;
-        console.log("Valid session found, using user ID:", userId);
-      } else {
-        console.log("Session not found in database");
-      }
+    // Require authentication for POST requests
+    if (!sessionId) {
+      console.log("No session found, returning authentication error");
+      return NextResponse.json({ 
+        error: "Authentication required", 
+        message: "You must be logged in to save updates"
+      }, { status: 401 });
     }
-
-    console.log("Using user ID for update:", userId);
+    
+    // Get user from session
+    const session = await findSessionById(sessionId);
+    if (!session) {
+      console.log("Invalid session, returning error");
+      cookieStore.delete("session_id");
+      return NextResponse.json({ 
+        error: "Invalid session", 
+        message: "Your session has expired or is invalid. Please log in again."
+      }, { status: 401 });
+    }
+    
+    // Use the user ID from the session
+    const userId = session.user_id;
+    console.log("Valid session found, using user ID:", userId);
 
     // Parse request body
     const requestBody = await request.json();
