@@ -133,6 +133,16 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
     const daysToAdd = isFriday(today) ? 7 : ((7 - dayOfWeek + 5) % 7)
     const nextFriday = addDays(today, daysToAdd)
     
+    // Double-check that it's actually a Friday
+    if (!isFriday(nextFriday)) {
+      console.error("Calculated date is not a Friday:", format(nextFriday, "yyyy-MM-dd"))
+      
+      // Force to nearest Friday as a fallback
+      const currentDay = nextFriday.getDay()
+      const fixedFriday = addDays(nextFriday, currentDay === 5 ? 0 : (5 - currentDay + 7) % 7)
+      return format(fixedFriday, "yyyy-MM-dd")
+    }
+    
     return format(nextFriday, "yyyy-MM-dd")
   }, [])
 
