@@ -256,11 +256,18 @@ export async function getUpdateById(updateId: string): Promise<any> {
     
     if (teamHealthResult.rows.length > 0) {
       const teamHealth = teamHealthResult.rows[0];
+      
+      // Log raw team health data from database
+      console.log("Raw team health data from DB:", JSON.stringify(teamHealth, null, 2));
+      
       data.team_health = {
         owner_input: teamHealth.owner_input || '',
         sentiment_score: teamHealth.sentiment_score || 3.5,
         overall_status: teamHealth.overall_status || ''
       };
+      
+      // Log team health data after processing
+      console.log("Processed team health data:", JSON.stringify(data.team_health, null, 2));
     }
     
     // Load delivery_performance data
@@ -595,6 +602,16 @@ export async function getUpdateById(updateId: string): Promise<any> {
       console.error("Error formatting weekDate for response:", e);
     }
     
+    // Log the final data structure before returning
+    console.log("Full update data structure:", {
+      id: update.id,
+      weekDate: formattedWeekDate,
+      top3Bullets: data.top_3_bullets,
+      hasTeamHealth: Boolean(data.team_health),
+      teamHealthData: data.team_health,
+      sections: Object.keys(data)
+    });
+    
     return {
       id: update.id,
       userId: update.user_id,
@@ -742,6 +759,9 @@ export async function saveUpdate(
       `, [savedUpdate.id]);
       
       const teamHealth = data.team_health;
+      
+      // Log team health data for debugging
+      console.log("Saving team health data:", JSON.stringify(teamHealth, null, 2));
       
       if (teamHealthResult.rows.length > 0) {
         // Update existing team_health record

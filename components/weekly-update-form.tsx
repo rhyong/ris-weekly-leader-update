@@ -374,6 +374,38 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       },
     };
   }
+  
+  // Helper function to ensure all fields are populated correctly
+  function ensureAllFieldsPopulated(data: WeeklyUpdateFormData): WeeklyUpdateFormData {
+    // Create a clean copy to avoid reference issues
+    const cleanData = {...data};
+    
+    // Log what we're working with
+    console.log("Ensuring all fields are populated. Initial data:", {
+      hasTop3Bullets: Boolean(cleanData.top_3_bullets),
+      hasTeamHealth: Boolean(cleanData.team_health),
+      hasTeamHealthOverallStatus: Boolean(cleanData.team_health?.overall_status)
+    });
+    
+    // Ensure team_health and its properties exist
+    if (!cleanData.team_health) {
+      cleanData.team_health = {
+        owner_input: "",
+        sentiment_score: 3.5,
+        overall_status: ""
+      };
+    } else {
+      // Ensure all team_health fields exist
+      cleanData.team_health.owner_input = cleanData.team_health.owner_input || "";
+      cleanData.team_health.sentiment_score = cleanData.team_health.sentiment_score || 3.5;
+      cleanData.team_health.overall_status = cleanData.team_health.overall_status || "";
+    }
+    
+    // Ensure top_3_bullets exists
+    cleanData.top_3_bullets = cleanData.top_3_bullets || "";
+    
+    return cleanData;
+  }
 
   // Separate effect to load existing update data
   useEffect(() => {
@@ -401,7 +433,10 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               formattedWeekDate: updateData?.weekDate ? new Date(updateData.weekDate).toISOString().split('T')[0] : null,
               dataSections: updateData?.data ? Object.keys(updateData.data) : 'none',
               metaDate: updateData?.data?.meta?.date,
+              top_3_bullets: updateData?.data?.top_3_bullets,
               hasTeamHealth: Boolean(updateData?.data?.team_health),
+              teamHealthFields: updateData?.data?.team_health ? Object.keys(updateData.data.team_health) : 'none',
+              overallStatus: updateData?.data?.team_health?.overall_status,
               hasDeliveryPerformance: Boolean(updateData?.data?.delivery_performance),
               hasStakeholderEngagement: Boolean(updateData?.data?.stakeholder_engagement),
               hasRisksEscalations: Boolean(updateData?.data?.risks_escalations),
@@ -416,7 +451,26 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               const defaultData = getDefaultDataStructure();
               
               // Deep merge the loaded data with the default structure
-              const completeData = deepMerge(defaultData, updateData.data);
+              const mergedData = deepMerge(defaultData, updateData.data);
+              
+              // Make a copy and ensure problematic fields are properly populated
+              const completeData = {...mergedData};
+              
+              // Explicitly ensure the problematic fields are properly populated
+              completeData.top_3_bullets = mergedData.top_3_bullets || "";
+              
+              // Ensure team_health structure is complete
+              if (!completeData.team_health) {
+                completeData.team_health = {
+                  owner_input: "",
+                  sentiment_score: 3.5,
+                  overall_status: ""
+                };
+              } else {
+                completeData.team_health.owner_input = completeData.team_health.owner_input || "";
+                completeData.team_health.sentiment_score = completeData.team_health.sentiment_score || 3.5;
+                completeData.team_health.overall_status = completeData.team_health.overall_status || "";
+              }
               
               // Ensure the date is in the correct format (yyyy-MM-dd)
               if (completeData.meta && completeData.meta.date) {
@@ -433,19 +487,67 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
                 }
               }
               
+              // Log the form data specifically for top_3_bullets and team_health.overall_status
+              console.log("Form data check for problematic fields:", {
+                top_3_bullets: completeData.top_3_bullets,
+                team_health_overall_status: completeData.team_health?.overall_status,
+                team_health: completeData.team_health
+              });
+              
               console.log("Prepared complete form data:", completeData);
               setFormData(completeData as WeeklyUpdateFormData);
               
-              // Reset the form with the prepared data
-              form.reset(completeData);
+              // We're going to avoid form.reset() as it's causing issues with complex form components
+              console.log("Instead of form.reset(), using individual setValue calls for all fields");
               
-              // Explicitly set the date field to ensure it's properly registered
+              // Update state immediately
+              setFormData(completeData as WeeklyUpdateFormData);
+              
+              // Set each field individually - more reliable than form.reset()
+              console.log("Setting all form fields individually with exact values from the database");
+              
+              // Set meta fields
+              form.setValue("meta.date", completeData.meta.date || getNextFriday);
+              form.setValue("meta.team_name", completeData.meta.team_name || "");
+              form.setValue("meta.client_org", completeData.meta.client_org || "");
+              
+              // Set top 3 bullets - this is one of the problematic fields
+              console.log("Setting top_3_bullets to:", completeData.top_3_bullets);
+              form.setValue("top_3_bullets", completeData.top_3_bullets || "");
+              
+              // Set all team_health fields individually
+              console.log("Setting team_health fields:", completeData.team_health);
+              form.setValue("team_health.owner_input", completeData.team_health.owner_input || "");
+              form.setValue("team_health.sentiment_score", completeData.team_health.sentiment_score || 3.5);
+              form.setValue("team_health.overall_status", completeData.team_health.overall_status || "");
+              
+              // Set delivery_performance fields
+              form.setValue("delivery_performance.workload_balance", completeData.delivery_performance.workload_balance || "JustRight");
+              form.setValue("delivery_performance.accomplishments", completeData.delivery_performance.accomplishments || [""]);
+              form.setValue("delivery_performance.misses_delays", completeData.delivery_performance.misses_delays || [""]);
+              
+              // Set stakeholder_engagement fields
+              form.setValue("stakeholder_engagement.stakeholder_nps", completeData.stakeholder_engagement.stakeholder_nps);
+              form.setValue("stakeholder_engagement.feedback_notes", completeData.stakeholder_engagement.feedback_notes || [""]);
+              form.setValue("stakeholder_engagement.expectation_shift", completeData.stakeholder_engagement.expectation_shift || [""]);
+              
+              // Set risks_escalations fields
+              form.setValue("risks_escalations.risks", completeData.risks_escalations.risks || [{ title: "", description: "", severity: "Green" }]);
+              form.setValue("risks_escalations.escalations", completeData.risks_escalations.escalations || [""]);
+              
+              // Set opportunities_wins fields
+              form.setValue("opportunities_wins.wins", completeData.opportunities_wins.wins || [""]);
+              form.setValue("opportunities_wins.growth_ops", completeData.opportunities_wins.growth_ops || [""]);
+              
+              // Set support_needed fields
+              form.setValue("support_needed.requests", completeData.support_needed.requests || [""]);
+              
+              // Give time for these values to propagate
               setTimeout(() => {
-                if (completeData.meta && completeData.meta.date) {
-                  console.log("Explicitly setting date after form reset:", completeData.meta.date);
-                  form.setValue("meta.date", completeData.meta.date);
-                }
-              }, 0);
+                console.log("Verify values were set correctly:");
+                console.log("top_3_bullets:", form.getValues("top_3_bullets"));
+                console.log("team_health.overall_status:", form.getValues("team_health.overall_status"));
+              }, 200);
             } else {
               console.warn("Update data missing or invalid format:", updateData);
               toast({

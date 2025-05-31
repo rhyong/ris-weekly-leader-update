@@ -32,7 +32,10 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
             placeholder="Morale dented by overtime; planning social hour."
             className="mt-1"
             aiContext="team_health"
-            {...register("team_health.owner_input")}
+            value={watch("team_health.owner_input")}
+            onChange={(e) => {
+              setValue("team_health.owner_input", e.target.value);
+            }}
           />
         </div>
 
@@ -43,7 +46,10 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
             placeholder="Team morale is high after completing the major milestone"
             className="mt-1"
             aiContext="overall_status"
-            {...register("team_health.overall_status")}
+            value={watch("team_health.overall_status")}
+            onChange={(e) => {
+              setValue("team_health.overall_status", e.target.value);
+            }}
           />
         </div>
 

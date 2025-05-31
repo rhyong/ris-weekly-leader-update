@@ -272,7 +272,10 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
             placeholder="Client A go-live 🟢 | two devs out sick 🟡 | need approval on scope creep"
             className="mt-1"
             aiContext="top_3_bullets"
-            {...register("top_3_bullets")}
+            value={form.watch("top_3_bullets")}
+            onChange={(e) => {
+              form.setValue("top_3_bullets", e.target.value);
+            }}
           />
           <p className="text-xs text-muted-foreground mt-1">AI-suggested summary of key points for executives</p>
         </div>
