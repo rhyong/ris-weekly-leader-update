@@ -63,8 +63,6 @@ CREATE TABLE team_health (
     owner_input TEXT,
     sentiment_score DECIMAL(3,1),
     overall_status TEXT,
-    energy_engagement TEXT,
-    roles_alignment TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

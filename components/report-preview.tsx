@@ -71,9 +71,7 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
 
       {/* Team Health */}
       {(team_health?.owner_input ||
-        team_health?.overall_status ||
-        team_health?.energy_engagement ||
-        team_health?.roles_alignment) && (
+        team_health?.overall_status) && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Team Health</h3>
@@ -103,20 +101,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
             <div>
               <h4 className="text-sm font-medium">Overall Status</h4>
               <p>{team_health.overall_status}</p>
-            </div>
-          )}
-
-          {team_health?.energy_engagement && (
-            <div>
-              <h4 className="text-sm font-medium">Energy & Engagement</h4>
-              <p>{team_health.energy_engagement}</p>
-            </div>
-          )}
-
-          {team_health?.roles_alignment && (
-            <div>
-              <h4 className="text-sm font-medium">Roles & Responsibilities</h4>
-              <p>{team_health.roles_alignment}</p>
             </div>
           )}
 

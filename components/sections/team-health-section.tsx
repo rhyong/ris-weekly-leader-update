@@ -46,27 +46,6 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
         </div>
 
         <div>
-          <Label htmlFor="team_health.energy_engagement">Energy level, engagement, collaboration</Label>
-          <Textarea
-            id="team_health.energy_engagement"
-            placeholder="Energy is good, team is collaborating well on the new feature"
-            className="mt-1"
-            {...register("team_health.energy_engagement")}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="team_health.roles_alignment">Are roles and responsibilities clear and well-aligned?</Label>
-          <Textarea
-            id="team_health.roles_alignment"
-            placeholder="Yes, we clarified the backend vs. frontend responsibilities this week"
-            className="mt-1"
-            {...register("team_health.roles_alignment")}
-          />
-        </div>
-
-
-        <div>
           <div className="flex justify-between">
             <Label>Sentiment Score (auto from chat analysis)</Label>
             <span className="font-medium">{typeof sentimentScore === 'number' ? sentimentScore.toFixed(1) : '3.5'}</span>

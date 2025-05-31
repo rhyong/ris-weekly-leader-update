@@ -137,9 +137,7 @@ function getDefaultDataStructure(): UpdateData {
     team_health: {
       owner_input: '',
       sentiment_score: 3.5,
-      overall_status: '',
-      energy_engagement: '',
-      roles_alignment: ''
+      overall_status: ''
     },
     delivery_performance: {
       workload_balance: 'JustRight',
@@ -261,9 +259,7 @@ export async function getUpdateById(updateId: string): Promise<any> {
       data.team_health = {
         owner_input: teamHealth.owner_input || '',
         sentiment_score: teamHealth.sentiment_score || 3.5,
-        overall_status: teamHealth.overall_status || '',
-        energy_engagement: teamHealth.energy_engagement || '',
-        roles_alignment: teamHealth.roles_alignment || ''
+        overall_status: teamHealth.overall_status || ''
       };
     }
     
@@ -763,31 +759,25 @@ export async function saveUpdate(
         // Update existing team_health record
         await query(`
           UPDATE team_health 
-          SET owner_input = $1, sentiment_score = $2, overall_status = $3, 
-              energy_engagement = $4, roles_alignment = $5
-          WHERE update_id = $6
+          SET owner_input = $1, sentiment_score = $2, overall_status = $3
+          WHERE update_id = $4
         `, [
           teamHealth.owner_input || null,
           teamHealth.sentiment_score || 3.5,
           teamHealth.overall_status || null,
-          teamHealth.energy_engagement || null,
-          teamHealth.roles_alignment || null,
           savedUpdate.id
         ]);
       } else {
         // Create new team_health record
         await query(`
           INSERT INTO team_health (
-            update_id, owner_input, sentiment_score, overall_status, 
-            energy_engagement, roles_alignment
-          ) VALUES ($1, $2, $3, $4, $5, $6)
+            update_id, owner_input, sentiment_score, overall_status
+          ) VALUES ($1, $2, $3, $4)
         `, [
           savedUpdate.id,
           teamHealth.owner_input || null,
           teamHealth.sentiment_score || 3.5,
-          teamHealth.overall_status || null,
-          teamHealth.energy_engagement || null,
-          teamHealth.roles_alignment || null
+          teamHealth.overall_status || null
         ]);
       }
     }

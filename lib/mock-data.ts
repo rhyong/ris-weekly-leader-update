@@ -142,8 +142,6 @@ export let weeklyUpdates: WeeklyUpdate[] = [
         traffic_light: "Green",
         sentiment_score: 4.2,
         overall_status: "Team morale is high after completing the major milestone",
-        energy_engagement: "Energy is good, team is collaborating well on the new feature",
-        roles_alignment: "Roles are clear and well-defined",
       },
       delivery_performance: {
         accomplishments: ["Completed new dashboard UI", "Fixed 12 critical bugs", "Improved load time by 30%"],
@@ -228,8 +226,6 @@ export let weeklyUpdates: WeeklyUpdate[] = [
         traffic_light: "Yellow",
         sentiment_score: 3.5,
         overall_status: "Team is working well but feeling some pressure",
-        energy_engagement: "Energy is moderate, some signs of stress",
-        roles_alignment: "Some confusion about responsibilities for new features",
       },
       delivery_performance: {
         accomplishments: ["Completed sprint planning", "Defined architecture for new features"],

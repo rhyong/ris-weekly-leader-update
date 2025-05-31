@@ -38,8 +38,6 @@ export interface WeeklyUpdateFormData {
     owner_input: string
     sentiment_score: number
     overall_status: string
-    energy_engagement: string
-    roles_alignment: string
   }
 
   // Delivery Performance
@@ -184,8 +182,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       owner_input: "",
       sentiment_score: 3.5,
       overall_status: "",
-      energy_engagement: "",
-      roles_alignment: "",
     },
     delivery_performance: {
       accomplishments: [""],
@@ -343,8 +339,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
         owner_input: "",
         sentiment_score: 3.5,
         overall_status: "",
-        energy_engagement: "",
-        roles_alignment: "",
       },
       delivery_performance: {
         accomplishments: [""],
