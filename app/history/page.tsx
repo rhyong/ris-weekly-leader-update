@@ -139,7 +139,7 @@ export default function HistoryPage() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    {(user?.role === "Administrator" || user?.role === "Manager") && (
+                    {(user?.role.toLowerCase() === "admin" || user?.role.toLowerCase() === "manager") && (
                       <Button 
                         variant="outline" 
                         onClick={() => router.push(`/update/${update.id}/edit`)}
