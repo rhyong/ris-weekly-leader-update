@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState, useEffect } from "react"
-import { getUpdatesByUserId } from "@/lib/mock-data"
+// Mock-data has been removed, using API endpoints instead
 import { Loader2, FileText, PlusCircle, BarChart, Calendar, AlertTriangle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 
@@ -99,7 +99,10 @@ export default function Dashboard() {
   }
   
   const currentWeekDate = getCurrentWeekDate()
-  const hasCurrentWeekUpdate = recentUpdates.some(update => update.week_date === currentWeekDate)
+  const hasCurrentWeekUpdate = recentUpdates.some(update => 
+    // Check both week_date and weekDate to support both API and mock-data formats
+    (update.week_date === currentWeekDate || update.weekDate === currentWeekDate)
+  )
   
   return (
     <div className="container py-10">
@@ -161,7 +164,7 @@ export default function Dashboard() {
               <Loader2 className="h-6 w-6 animate-spin" />
             ) : recentUpdates.length > 0 ? (
               <div className="text-sm">
-                {formatDistanceToNow(new Date(recentUpdates[0].updated_at), { addSuffix: true })}
+                {formatDistanceToNow(new Date(recentUpdates[0].updated_at || recentUpdates[0].updatedAt), { addSuffix: true })}
               </div>
             ) : (
               <div className="text-sm text-muted-foreground">No updates yet</div>
@@ -234,11 +237,11 @@ export default function Dashboard() {
             {recentUpdates.map((update) => (
               <Card key={update.id}>
                 <CardHeader>
-                  <CardTitle className="text-md">{update.team_name}</CardTitle>
-                  <CardDescription>{formatDate(update.week_date)}</CardDescription>
+                  <CardTitle className="text-md">{update.team_name || update.teamName}</CardTitle>
+                  <CardDescription>{formatDate(update.week_date || update.weekDate)}</CardDescription>
                 </CardHeader>
                 <CardContent className="pb-2">
-                  <p className="text-sm truncate">{update.client_org}</p>
+                  <p className="text-sm truncate">{update.client_org || update.clientOrg}</p>
                 </CardContent>
                 <CardFooter className="pt-1">
                   <Link href={`/update/${update.id}`}>

@@ -724,169 +724,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
     }, 100); // Small delay to ensure state is updated
   }
   
-  // Generate test data for each section
-  const generateTestData = (section: string) => {
-    // Use the next Friday for test data
-    const fridayDate = getNextFriday;
-    
-    // Common data for all sections
-    const commonData = {
-      meta: {
-        date: fridayDate,
-        team_name: "Frontend Platform Team",
-        client_org: "Acme Corporation",
-      },
-      top_3_bullets: "Sprint complete 🟢 | New feature launched 🟢 | Team morale high 🟢",
-    };
-    
-    // Create test data based on section
-    if (section === 'team') {
-      form.setValue('meta.date', fridayDate);
-      form.setValue('meta.team_name', 'Frontend Platform Team');
-      form.setValue('meta.client_org', 'Acme Corporation');
-      form.setValue('top_3_bullets', 'Sprint complete 🟢 | New feature launched 🟢 | Team morale high 🟢');
-      
-      // Team Health
-      form.setValue('team_health.owner_input', 'Team is doing great with high energy and excellent collaboration.');
-      form.setValue('team_health.sentiment_score', 4.5);
-      form.setValue('team_health.overall_status', 'Team morale is high after completing the milestone.');
-      
-      // Delivery Performance
-      form.setValue('delivery_performance.accomplishments', [
-        'Completed new dashboard UI',
-        'Fixed 8 critical bugs',
-        'Improved load time by 40%'
-      ]);
-      form.setValue('delivery_performance.misses_delays', [
-        'API integration delayed due to third-party issues',
-        'Documentation updates pending'
-      ]);
-      form.setValue('delivery_performance.workload_balance', 'JustRight');
-      
-      // Stakeholder Engagement
-      form.setValue('stakeholder_engagement.feedback_notes', [
-        'Client praised the new UI design',
-        'Stakeholders happy with progress on timeline'
-      ]);
-      form.setValue('stakeholder_engagement.expectation_shift', [
-        'Timeline extended for phase 2 due to scope increase',
-        'New requirement added for accessibility compliance'
-      ]);
-      form.setValue('stakeholder_engagement.stakeholder_nps', 4.2);
-      
-      // Risks & Escalations
-      form.setValue('risks_escalations.risks', [
-        {
-          title: 'Third-party API reliability',
-          description: 'External API has had intermittent outages affecting our service',
-          severity: 'Yellow'
-        },
-        {
-          title: 'Resource constraints',
-          description: 'Team may be understaffed for upcoming feature work',
-          severity: 'Red'
-        }
-      ]);
-      form.setValue('risks_escalations.escalations', [
-        'Need decision on feature prioritization for next sprint',
-        'Require approval for additional cloud resources'
-      ]);
-      
-      // Opportunities & Wins
-      form.setValue('opportunities_wins.wins', [
-        'Successfully launched new dashboard with positive feedback',
-        'Reduced page load time by 40% through optimization'
-      ]);
-      form.setValue('opportunities_wins.growth_ops', [
-        'Potential for AI-powered analytics in next phase',
-        'Opportunity to refactor legacy components for better performance'
-      ]);
-      
-      // Support Needed
-      form.setValue('support_needed.requests', [
-        'Additional QA resource for next sprint',
-        'Technical guidance on new API integration'
-      ]);
-      
-      toast({
-        title: "Test data added",
-        description: "Team updates test data has been populated",
-      });
-    }
-    
-    else if (section === 'members') {
-      // Team Members Updates
-      form.setValue('team_members_updates.people_changes', 'One new developer joining next week, and one engineer moving to another team at end of month.');
-      
-      form.setValue('team_members_updates.top_contributors', [
-        {
-          name: 'Sarah Johnson',
-          achievement: 'Led successful client demo that clarified project scope',
-          recognition: 'Team shoutout and gift card'
-        },
-        {
-          name: 'Michael Chen',
-          achievement: 'Solved complex performance issue affecting multiple features',
-          recognition: 'Public recognition in all-hands meeting'
-        }
-      ]);
-      
-      form.setValue('team_members_updates.members_needing_attention', [
-        {
-          name: 'James Smith',
-          issue: 'Struggling with time management and work prioritization',
-          support_plan: 'Daily check-ins and peer mentoring for 2 weeks',
-          delivery_risk: 'Medium'
-        },
-        {
-          name: 'Emily Davis',
-          issue: 'Onboarding challenges with our complex codebase',
-          support_plan: 'Assigned dedicated mentor and additional documentation time',
-          delivery_risk: 'Low'
-        }
-      ]);
-      
-      toast({
-        title: "Test data added",
-        description: "Team members test data has been populated",
-      });
-    }
-    
-    else if (section === 'personal') {
-      // Personal Updates
-      form.setValue('personal_updates.personal_wins', [
-        'Successfully led cross-team collaboration on authentication service',
-        'Mentored two junior developers who are now contributing independently',
-        'Improved team planning process resulting in better sprint outcomes'
-      ]);
-      
-      form.setValue('personal_updates.reflections', [
-        'Learned the importance of early stakeholder alignment on requirements',
-        'Need to create more space for team innovation and creative problem-solving',
-        'Regular 1:1s have significantly improved team communication'
-      ]);
-      
-      form.setValue('personal_updates.goals', [
-        {
-          description: 'Improve team velocity by 15% through process optimization',
-          status: 'Green',
-          update: 'On track with 10% improvement so far through better planning'
-        },
-        {
-          description: 'Reduce technical debt by 20% in core services',
-          status: 'Yellow',
-          update: 'Behind schedule due to urgent feature requests taking priority'
-        }
-      ]);
-      
-      form.setValue('personal_updates.support_needed', 'Need guidance on balancing technical debt reduction with new feature development priorities.');
-      
-      toast({
-        title: "Test data added",
-        description: "Personal updates test data has been populated",
-      });
-    }
-  };
 
   // For debugging
   console.log("Current state:", { 
@@ -957,14 +794,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
                 <OpportunitiesWinsSection form={form} />
                 <SupportNeededSection form={form} />
 
-                <div className="flex justify-between mt-8">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => generateTestData('team')}
-                  >
-                    Add Test Data
-                  </Button>
+                <div className="flex justify-end mt-8">
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? (
                       <>
@@ -984,14 +814,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               <div className="space-y-6">
                 <TeamMembersUpdatesSection form={form} />
 
-                <div className="flex justify-between mt-8">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => generateTestData('members')}
-                  >
-                    Add Test Data
-                  </Button>
+                <div className="flex justify-end mt-8">
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? (
                       <>
@@ -1011,14 +834,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               <div className="space-y-6">
                 <PersonalUpdatesSection form={form} />
 
-                <div className="flex justify-between mt-8">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => generateTestData('personal')}
-                  >
-                    Add Test Data
-                  </Button>
+                <div className="flex justify-end mt-8">
                   <Button type="submit" disabled={isSaving}>
                     {isSaving ? (
                       <>

@@ -11,8 +11,25 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2, User, Mail, Users, Building } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/lib/auth-context"
-import type { User as UserType } from "@/lib/mock-data"
-import type { TeamMember } from "@/lib/mock-data"
+// Define our own types to match what's in the API
+interface UserType {
+  id: string;
+  username: string;
+  name: string;
+  role: string;
+  email?: string;
+  teamName?: string;
+  clientOrg?: string;
+  bio?: string;
+  profileImage?: string;
+}
+
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  email?: string;
+}
 
 interface ProfileData {
   user: Omit<UserType, "password">
