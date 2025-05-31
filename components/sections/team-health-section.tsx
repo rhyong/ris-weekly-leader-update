@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData, TrafficLight } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +10,8 @@ import { Slider } from "@/components/ui/slider"
 import TrafficLightIndicator from "../ui/traffic-light-indicator"
 import SentimentBar from "../ui/sentiment-bar"
 import TextareaWithAI from "../ui/textarea-with-ai"
+import { Button } from "@/components/ui/button"
+import { Sparkles } from "lucide-react"
 
 interface TeamHealthSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -18,6 +21,43 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
   const { register, watch, setValue } = form
   const watchedScore = watch("team_health.sentiment_score")
   const sentimentScore = typeof watchedScore === 'number' ? watchedScore : 3.5 // Ensure it's a number
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  
+  // Function to analyze sentiment using AI
+  async function analyzeSentimentWithAI() {
+    try {
+      setIsAnalyzing(true)
+      
+      // Get the current values from the form
+      const teamHealthNotes = watch("team_health.owner_input") || ""
+      const overallStatus = watch("team_health.overall_status") || ""
+      
+      // Call the sentiment analysis API
+      const response = await fetch("/api/ai/sentiment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamHealthNotes,
+          overallStatus,
+        }),
+      })
+      
+      const data = await response.json()
+      
+      // Update the form with the calculated sentiment score
+      if (data.success && typeof data.sentimentScore === "number") {
+        setValue("team_health.sentiment_score", data.sentimentScore)
+      } else {
+        console.error("Failed to analyze sentiment:", data.error)
+      }
+    } catch (error) {
+      console.error("Error analyzing sentiment:", error)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
 
   return (
     <Card>
@@ -54,9 +94,20 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
         </div>
 
         <div>
-          <div className="flex justify-between">
-            <Label>Sentiment Score (auto from chat analysis)</Label>
-            <span className="font-medium">{typeof sentimentScore === 'number' ? sentimentScore.toFixed(1) : '3.5'}</span>
+          <div className="flex justify-between items-center">
+            <Label>Sentiment Score</Label>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={analyzeSentimentWithAI}
+                disabled={isAnalyzing}
+              >
+                <Sparkles className="size-4" />
+                {isAnalyzing ? "Analyzing..." : "Analyze Sentiment"}
+              </Button>
+              <span className="font-medium">{typeof sentimentScore === 'number' ? sentimentScore.toFixed(1) : '3.5'}</span>
+            </div>
           </div>
           <Slider
             value={[sentimentScore]}
