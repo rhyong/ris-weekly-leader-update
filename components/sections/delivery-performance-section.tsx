@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Plus, Trash2 } from "lucide-react"
 import TrafficLightIndicator from "../ui/traffic-light-indicator"
+import InputWithAI from "../ui/input-with-ai"
 
 interface DeliveryPerformanceSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -53,12 +54,18 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
           <Label>Accomplishments</Label>
           {accomplishments.map((item, index) => (
             <div key={`accomplishment-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="Completed feature X ahead of schedule"
                 value={item}
+                aiContext="accomplishments"
                 onChange={(e) => {
                   const updated = [...accomplishments]
                   updated[index] = e.target.value
+                  setValue("delivery_performance.accomplishments", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...accomplishments]
+                  updated[index] = value
                   setValue("delivery_performance.accomplishments", updated)
                 }}
               />
@@ -76,12 +83,18 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
           <Label>Misses & Delays (optional)</Label>
           {missesDelays.map((item, index) => (
             <div key={`miss-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="API integration delayed due to vendor issues"
                 value={item}
+                aiContext="misses_delays"
                 onChange={(e) => {
                   const updated = [...missesDelays]
                   updated[index] = e.target.value
+                  setValue("delivery_performance.misses_delays", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...missesDelays]
+                  updated[index] = value
                   setValue("delivery_performance.misses_delays", updated)
                 }}
               />

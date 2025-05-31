@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2 } from "lucide-react"
 import TrafficLightIndicator from "../ui/traffic-light-indicator"
+import InputWithAI from "../ui/input-with-ai"
+import TextareaWithAI from "../ui/textarea-with-ai"
 
 interface RisksEscalationsSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -63,12 +64,18 @@ export default function RisksEscalationsSection({ form }: RisksEscalationsSectio
           {risks.map((risk, index) => (
             <div key={`risk-${index}`} className="mt-3 p-3 border rounded-md">
               <div className="flex items-center gap-2">
-                <Input
+                <InputWithAI
                   placeholder="Risk title"
                   value={risk.title}
+                  aiContext="risks"
                   onChange={(e) => {
                     const updated = [...risks]
                     updated[index] = { ...updated[index], title: e.target.value }
+                    setValue("risks_escalations.risks", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...risks]
+                    updated[index] = { ...updated[index], title: value }
                     setValue("risks_escalations.risks", updated)
                   }}
                 />
@@ -86,13 +93,19 @@ export default function RisksEscalationsSection({ form }: RisksEscalationsSectio
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <Textarea
+              <TextareaWithAI
                 placeholder="Risk description and mitigation plan"
                 className="mt-2"
                 value={risk.description}
+                aiContext="risks"
                 onChange={(e) => {
                   const updated = [...risks]
                   updated[index] = { ...updated[index], description: e.target.value }
+                  setValue("risks_escalations.risks", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...risks]
+                  updated[index] = { ...updated[index], description: value }
                   setValue("risks_escalations.risks", updated)
                 }}
               />
@@ -107,12 +120,18 @@ export default function RisksEscalationsSection({ form }: RisksEscalationsSectio
           <Label>Escalations</Label>
           {escalations.map((item, index) => (
             <div key={`escalation-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="Need VP approval for additional resources"
                 value={item}
+                aiContext="escalations"
                 onChange={(e) => {
                   const updated = [...escalations]
                   updated[index] = e.target.value
+                  setValue("risks_escalations.escalations", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...escalations]
+                  updated[index] = value
                   setValue("risks_escalations.escalations", updated)
                 }}
               />

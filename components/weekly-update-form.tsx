@@ -750,8 +750,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       form.setValue('team_health.owner_input', 'Team is doing great with high energy and excellent collaboration.');
       form.setValue('team_health.sentiment_score', 4.5);
       form.setValue('team_health.overall_status', 'Team morale is high after completing the milestone.');
-      form.setValue('team_health.energy_engagement', 'Energy is positive, team is collaborating well on features.');
-      form.setValue('team_health.roles_alignment', 'Roles are clear and well-defined with good coordination.');
       
       // Delivery Performance
       form.setValue('delivery_performance.accomplishments', [

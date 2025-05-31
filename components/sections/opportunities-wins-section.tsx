@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
 import TrafficLightIndicator from "../ui/traffic-light-indicator"
+import InputWithAI from "../ui/input-with-ai"
 
 interface OpportunitiesWinsSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -47,12 +48,18 @@ export default function OpportunitiesWinsSection({ form }: OpportunitiesWinsSect
           <Label>Wins</Label>
           {wins.map((item, index) => (
             <div key={`win-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="Reduced build time by 30%"
                 value={item}
+                aiContext="wins"
                 onChange={(e) => {
                   const updated = [...wins]
                   updated[index] = e.target.value
+                  setValue("opportunities_wins.wins", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...wins]
+                  updated[index] = value
                   setValue("opportunities_wins.wins", updated)
                 }}
               />
@@ -70,12 +77,18 @@ export default function OpportunitiesWinsSection({ form }: OpportunitiesWinsSect
           <Label>Growth Opportunities</Label>
           {growthOps.map((item, index) => (
             <div key={`growth-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="AI build-copilot POC proposed"
                 value={item}
+                aiContext="growth_opportunities"
                 onChange={(e) => {
                   const updated = [...growthOps]
                   updated[index] = e.target.value
+                  setValue("opportunities_wins.growth_ops", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...growthOps]
+                  updated[index] = value
                   setValue("opportunities_wins.growth_ops", updated)
                 }}
               />

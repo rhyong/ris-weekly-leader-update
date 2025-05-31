@@ -6,9 +6,9 @@ import type { WeeklyUpdateFormData } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format, subYears, addDays, isFriday, isBefore } from "date-fns"
+import TextareaWithAI from "../ui/textarea-with-ai"
 
 interface HeaderSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -184,10 +184,11 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="top_3_bullets">Top 3 Bullets (≤35 words)</Label>
-          <Textarea
+          <TextareaWithAI
             id="top_3_bullets"
             placeholder="Client A go-live 🟢 | two devs out sick 🟡 | need approval on scope creep"
             className="mt-1"
+            aiContext="top_3_bullets"
             {...register("top_3_bullets")}
           />
           <p className="text-xs text-muted-foreground mt-1">AI-suggested summary of key points for executives</p>

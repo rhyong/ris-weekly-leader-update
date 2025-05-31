@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
+import InputWithAI from "../ui/input-with-ai"
 
 interface SupportNeededSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -35,12 +36,18 @@ export default function SupportNeededSection({ form }: SupportNeededSectionProps
           <Label>Support Requests</Label>
           {requests.map((item, index) => (
             <div key={`request-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
+              <InputWithAI
                 placeholder="Need contractor budget to cover DevOps gap"
                 value={item}
+                aiContext="support_needed"
                 onChange={(e) => {
                   const updated = [...requests]
                   updated[index] = e.target.value
+                  setValue("support_needed.requests", updated)
+                }}
+                onValueChange={(value) => {
+                  const updated = [...requests]
+                  updated[index] = value
                   setValue("support_needed.requests", updated)
                 }}
               />
