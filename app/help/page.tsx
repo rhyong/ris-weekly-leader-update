@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2, Database, Sprout, RefreshCw, Wifi } from "lucide-react";
+import { AlertCircle, CheckCircle2, Database, RefreshCw, Wifi } from "lucide-react";
 
 export default function HelpPage() {
   // State for tracking API operations
@@ -16,14 +16,6 @@ export default function HelpPage() {
     success?: boolean;
     message?: string;
   }>({ loading: false });
-  
-  const [seedStatus, setSeedStatus] = useState<{
-    loading: boolean;
-    success?: boolean;
-    message?: string;
-  }>({ loading: false });
-  
-  // Removed seedUsersStatus state
   
   const [dbStatus, setDbStatus] = useState<{
     loading: boolean;
@@ -67,42 +59,7 @@ export default function HelpPage() {
     }
   };
 
-  // Function to seed database with sample data
-  const handleSeedDatabase = async () => {
-    setSeedStatus({ loading: true });
-    try {
-      const response = await fetch('/api/database/seed', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setSeedStatus({ 
-          loading: false, 
-          success: true, 
-          message: data.message || "Database seeded with sample data successfully" 
-        });
-      } else {
-        setSeedStatus({ 
-          loading: false, 
-          success: false, 
-          message: data.message || "Failed to seed database with sample data" 
-        });
-      }
-    } catch (error) {
-      setSeedStatus({ 
-        loading: false, 
-        success: false, 
-        message: "An error occurred while seeding the database" 
-      });
-    }
-  };
-  
-  // Removed handleSeedUsersOnly function
+  // Seeding functionality has been removed for security reasons
   
   // Function to check database connection status
   const checkDatabaseStatus = async () => {
@@ -157,7 +114,7 @@ export default function HelpPage() {
             <CardHeader>
               <CardTitle>Database</CardTitle>
               <CardDescription>
-                Connect to your PostgreSQL database and seed it with sample data
+                Connect to your PostgreSQL database and initialize the tables
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -258,55 +215,29 @@ export default function HelpPage() {
                   </div>
                   
                   <div className="space-y-4">
-                    <h4 className="font-medium">Step 2: Seed Data</h4>
+                    <h4 className="font-medium">Step 2: Create Users</h4>
                     <p className="text-sm text-muted-foreground">
-                      Populate the database with sample data.
+                      After initializing the database, create users through the application's signup page or user management interface.
                     </p>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        onClick={handleSeedDatabase}
-                        disabled={seedStatus.loading || (initializeStatus.success === undefined)}
-                        className="w-full"
-                        variant={initializeStatus.success === undefined ? "secondary" : "default"}
-                      >
-                        {seedStatus.loading ? (
-                          <span className="flex items-center gap-2">
-                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                            Seeding Data...
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <Sprout className="h-4 w-4" />
-                            Seed Sample Data
-                          </span>
-                        )}
-                      </Button>
-                    </div>
-                    
-                    {seedStatus.message && (
-                      <Alert variant={seedStatus.success ? "default" : "destructive"}>
-                        <div className="flex items-start gap-2">
-                          {seedStatus.success ? (
-                            <CheckCircle2 className="h-4 w-4 mt-0.5" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 mt-0.5" />
-                          )}
-                          <div>
-                            <AlertTitle>{seedStatus.success ? "Success" : "Error"}</AlertTitle>
-                            <AlertDescription>{seedStatus.message}</AlertDescription>
-                          </div>
+                    <Alert>
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 mt-0.5" />
+                        <div>
+                          <AlertTitle>Security Note</AlertTitle>
+                          <AlertDescription>
+                            Users should be created one by one through the application's user management interface.
+                            Automatic population of test data is not available.
+                          </AlertDescription>
                         </div>
-                      </Alert>
-                    )}
-                    
-                    {/* Removed seedUsersStatus alert */}
+                      </div>
+                    </Alert>
                   </div>
                 </div>
               </section>
             </CardContent>
             <CardFooter className="bg-muted/50 flex justify-between">
               <div className="text-sm text-muted-foreground">
-                <span className="font-medium">Note:</span> Initialize database before seeding sample data.
+                <span className="font-medium">Note:</span> Initialize database before creating users.
               </div>
             </CardFooter>
           </Card>

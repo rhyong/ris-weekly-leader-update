@@ -66,7 +66,7 @@ async function resetDatabase() {
       "Database reset complete. All tables have been dropped and recreated."
     );
     console.log(
-      "Run 'npm run seed' to populate the database with sample data."
+      "The database is empty. You will need to create users through the application interface."
     );
   } catch (error) {
     // Rollback on error
