@@ -318,23 +318,35 @@ CREATE TRIGGER update_team_members_updates_timestamp BEFORE UPDATE ON team_membe
 CREATE TRIGGER update_top_contributors_timestamp BEFORE UPDATE ON top_contributors FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_members_needing_attention_timestamp BEFORE UPDATE ON members_needing_attention FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 
+-- Create a function to hash passwords in the same way as the app (SHA-256)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE OR REPLACE FUNCTION hash_password(password TEXT)
+RETURNS TEXT AS $$
+BEGIN
+    RETURN encode(digest(password, 'sha256'), 'hex');
+END;
+$$ LANGUAGE plpgsql;
+
 -- Insert some initial data for testing
 INSERT INTO users (username, password_hash, name, role) VALUES 
-('admin', '$2b$10$rM7Qc8ynOdwfkRr8fIPeRe6wUEVK0K1qXLf.Yz5LYxO0tK4QW4kOi', 'Admin User', 'admin'),
-('testuser', '$2b$10$rM7Qc8ynOdwfkRr8fIPeRe6wUEVK0K1qXLf.Yz5LYxO0tK4QW4kOi', 'Test User', 'team_lead');
+('admin', hash_password('password123'), 'Admin User', 'admin'),
+('testuser', hash_password('password123'), 'Test User', 'team_lead');
 
 INSERT INTO teams (name, description) VALUES 
-('Zenith', `Greg Presland's team`),
-('Titan', `Aady Sridhar's team`),
-('Enigma', `Mirdul Oli's team`),
-('Nova', `Shane Lessard's team`),
-('Team Cruz', `Anne Cruz's team`),
-('Team Singh', `Manjit Singh's team`),
-('Team Stranianek', `Marta Stranianek's team`);
+('Enigma', 'Mirdul Oli''s team'),
+('Nova', 'Shane Lessard''s team'),
+('Team Cruz', 'Anne Cruz''s team'),
+('Team Singh', 'Manjit Singh''s team'),
+('Team Stranianek', 'Marta Stranianek''s team'),
+('Titan', 'Aady Sridhar''s team'),
+('Zenith', 'Greg Presland''s team'),
+('Software Development Team', 'Software development team');
 
 INSERT INTO organizations (name, description) VALUES 
 ('Rocket - CX - RMA', 'Rocket - CX - RMA'),
 ('Rocket - CX - RMS', 'Rocket - CX - RMS'),
 ('Rocket Close', 'Rocket Close'),
 ('Rocket Pro', 'Rocket Pro'),
-('Rocket - CX', 'Rocket - CX');
+('Rocket - CX', 'Rocket - CX'),
+('RIS', 'RIS');

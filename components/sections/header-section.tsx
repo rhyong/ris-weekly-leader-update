@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useEffect } from "react"
+import { useMemo, useEffect, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,8 +14,25 @@ interface HeaderSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
 }
 
+interface Team {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 export default function HeaderSection({ form }: HeaderSectionProps) {
   const { register } = form
+  const [teams, setTeams] = useState<Team[]>([])
+  const [organizations, setOrganizations] = useState<Organization[]>([])
+  const [isLoadingTeams, setIsLoadingTeams] = useState(false)
+  const [isLoadingOrgs, setIsLoadingOrgs] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   // Effect to ensure date is always a Friday
   useEffect(() => {
@@ -49,6 +66,58 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
     }
   }, [form]);
   
+  // Fetch teams from API
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        setIsLoadingTeams(true)
+        setError(null)
+        
+        const response = await fetch('/api/teams')
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch teams: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        setTeams(data)
+      } catch (err) {
+        console.error('Error fetching teams:', err)
+        setError('Failed to load teams. Please try refreshing the page.')
+      } finally {
+        setIsLoadingTeams(false)
+      }
+    }
+    
+    fetchTeams()
+  }, [])
+  
+  // Fetch organizations from API
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        setIsLoadingOrgs(true)
+        setError(null)
+        
+        const response = await fetch('/api/organizations')
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch organizations: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        setOrganizations(data)
+      } catch (err) {
+        console.error('Error fetching organizations:', err)
+        setError('Failed to load organizations. Please try refreshing the page.')
+      } finally {
+        setIsLoadingOrgs(false)
+      }
+    }
+    
+    fetchOrganizations()
+  }, [])
+
   // Generate available Fridays including the current form date if it exists
   const fridayDates = useMemo(() => {
     const fridays: { value: string; label: string }[] = []
@@ -182,6 +251,20 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
         <CardTitle>Report Header</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {error && (
+          <div className="p-3 mb-4 text-sm border rounded-md bg-destructive/10 border-destructive text-destructive">
+            <strong>Error:</strong> {error}
+            <button 
+              className="ml-2 underline"
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        
         <div>
           <Label htmlFor="top_3_bullets">Top 3 Bullets (≤35 words)</Label>
           <TextareaWithAI
@@ -219,14 +302,20 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 mt-1"
               value={form.watch("meta.team_name")}
               onChange={(e) => form.setValue("meta.team_name", e.target.value)}
+              disabled={isLoadingTeams}
             >
-              <option value="" disabled>Select team</option>
-              <option value="Frontend Platform">Frontend Platform</option>
-              <option value="Backend Services">Backend Services</option>
-              <option value="Mobile Development">Mobile Development</option>
-              <option value="DevOps">DevOps</option>
-              <option value="QA & Testing">QA & Testing</option>
+              <option value="" disabled>
+                {isLoadingTeams ? "Loading teams..." : "Select team"}
+              </option>
+              {teams.map((team) => (
+                <option key={team.id} value={team.name}>
+                  {team.name}
+                </option>
+              ))}
             </select>
+            {error && error.includes("teams") && (
+              <p className="text-xs text-red-500 mt-1">{error}</p>
+            )}
           </div>
         </div>
 
@@ -237,14 +326,20 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
             className="w-full rounded-md border border-input bg-background px-3 py-2 mt-1"
             value={form.watch("meta.client_org")}
             onChange={(e) => form.setValue("meta.client_org", e.target.value)}
+            disabled={isLoadingOrgs}
           >
-            <option value="" disabled>Select client</option>
-            <option value="Acme Corp">Acme Corp</option>
-            <option value="Globex Industries">Globex Industries</option>
-            <option value="Initech">Initech</option>
-            <option value="Umbrella Corporation">Umbrella Corporation</option>
-            <option value="Stark Industries">Stark Industries</option>
+            <option value="" disabled>
+              {isLoadingOrgs ? "Loading organizations..." : "Select client"}
+            </option>
+            {organizations.map((org) => (
+              <option key={org.id} value={org.name}>
+                {org.name}
+              </option>
+            ))}
           </select>
+          {error && error.includes("organizations") && (
+            <p className="text-xs text-red-500 mt-1">{error}</p>
+          )}
         </div>
       </CardContent>
     </Card>
