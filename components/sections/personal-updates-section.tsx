@@ -17,7 +17,6 @@ interface PersonalUpdatesSectionProps {
 export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionProps) {
   const { register, watch, setValue } = form
   const personalWins = watch("personal_updates.personal_wins")
-  const leadershipFocus = watch("personal_updates.leadership_focus")
   const reflections = watch("personal_updates.reflections")
   const goals = watch("personal_updates.goals")
   const supportNeeded = watch("personal_updates.support_needed")
@@ -30,11 +29,6 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
   const removePersonalWin = (index: number) => {
     const updated = personalWins.filter((_, i) => i !== index)
     setValue("personal_updates.personal_wins", updated.length ? updated : [""])
-  }
-
-  // Leadership Focus
-  const updateLeadershipFocus = (field: string, value: string) => {
-    setValue(`personal_updates.leadership_focus.${field}` as any, value)
   }
 
   // Reflections
@@ -98,35 +92,6 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
             <Button type="button" variant="outline" size="sm" className="mt-2" onClick={addPersonalWin}>
               <Plus className="h-4 w-4 mr-2" /> Add Win
             </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Leadership Focus */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Leadership Focus</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="leadership_focus.skill">What leadership skill or behavior are you focusing on?</Label>
-            <Input
-              id="leadership_focus.skill"
-              placeholder="Delegation, Active Listening, Strategic Thinking, etc."
-              className="mt-1"
-              value={leadershipFocus.skill}
-              onChange={(e) => updateLeadershipFocus("skill", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="leadership_focus.practice">How are you practicing or improving it?</Label>
-            <Textarea
-              id="leadership_focus.practice"
-              placeholder="Specific actions you're taking to improve this skill"
-              className="mt-1"
-              value={leadershipFocus.practice}
-              onChange={(e) => updateLeadershipFocus("practice", e.target.value)}
-            />
           </div>
         </CardContent>
       </Card>

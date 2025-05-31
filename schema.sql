@@ -198,8 +198,6 @@ CREATE TABLE support_requests (
 CREATE TABLE personal_updates (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     update_id UUID NOT NULL REFERENCES weekly_updates(id) ON DELETE CASCADE,
-    leadership_focus_skill TEXT,
-    leadership_focus_practice TEXT,
     support_needed TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

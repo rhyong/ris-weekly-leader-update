@@ -178,10 +178,6 @@ export let weeklyUpdates: WeeklyUpdate[] = [
       },
       personal_updates: {
         personal_wins: ["Successfully led cross-team collaboration", "Mentored junior developer"],
-        leadership_focus: {
-          skill: "Delegation",
-          practice: "Assigning more tasks to senior team members",
-        },
         reflections: ["Learned importance of early stakeholder alignment"],
         goals: [
           {
@@ -273,10 +269,6 @@ export let weeklyUpdates: WeeklyUpdate[] = [
       },
       personal_updates: {
         personal_wins: ["Improved team communication processes"],
-        leadership_focus: {
-          skill: "Strategic thinking",
-          practice: "Dedicating time for long-term planning",
-        },
         reflections: ["Need to better balance tactical and strategic work"],
         goals: [
           {

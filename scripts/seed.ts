@@ -303,13 +303,11 @@ async function seedDatabase() {
         // Create personal updates
         const personalResult = await client.query(
           `INSERT INTO personal_updates 
-          (update_id, leadership_focus_skill, leadership_focus_practice, support_needed)
-          VALUES ($1, $2, $3, $4)
+          (update_id, support_needed)
+          VALUES ($1, $2)
           RETURNING id`,
           [
             updateId,
-            "Communication",
-            "Holding effective 1:1s with team members",
             "Need guidance on handling complex stakeholder situation",
           ]
         );

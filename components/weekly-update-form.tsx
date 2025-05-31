@@ -80,10 +80,6 @@ export interface WeeklyUpdateFormData {
   // Personal Updates
   personal_updates: {
     personal_wins: string[]
-    leadership_focus: {
-      skill: string
-      practice: string
-    }
     reflections: string[]
     goals: Array<{
       description: string
@@ -204,10 +200,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
     },
     personal_updates: {
       personal_wins: [""],
-      leadership_focus: {
-        skill: "",
-        practice: "",
-      },
       reflections: [""],
       goals: [{ description: "", status: "Green", update: "" }],
       support_needed: "",
@@ -266,8 +258,21 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
   }, [isNewUpdate, existingUpdateId, savedUpdateId]);
   
   // Initialize the form first to avoid reference issues
+  // Make sure date is properly formatted in yyyy-MM-dd format
+  const formattedData = { ...formData };
+  if (formattedData.meta && formattedData.meta.date) {
+    try {
+      const dateObj = new Date(formattedData.meta.date);
+      if (!isNaN(dateObj.getTime())) {
+        formattedData.meta.date = dateObj.toISOString().split('T')[0];
+      }
+    } catch (e) {
+      console.error("Error formatting date in defaultValues:", e);
+    }
+  }
+  
   const form = useForm<WeeklyUpdateFormData>({
-    defaultValues: formData,
+    defaultValues: formattedData,
   });
   
   // Update hasInitialSave whenever savedUpdateId changes
@@ -354,10 +359,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       },
       personal_updates: {
         personal_wins: [""],
-        leadership_focus: {
-          skill: "",
-          practice: "",
-        },
         reflections: [""],
         goals: [{ description: "", status: "Green", update: "" }],
         support_needed: "",
@@ -392,7 +393,10 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
             console.log("API Response structure:", {
               hasId: Boolean(updateData?.id),
               hasData: Boolean(updateData?.data),
+              weekDate: updateData?.weekDate,
+              formattedWeekDate: updateData?.weekDate ? new Date(updateData.weekDate).toISOString().split('T')[0] : null,
               dataSections: updateData?.data ? Object.keys(updateData.data) : 'none',
+              metaDate: updateData?.data?.meta?.date,
               hasTeamHealth: Boolean(updateData?.data?.team_health),
               hasDeliveryPerformance: Boolean(updateData?.data?.delivery_performance),
               hasStakeholderEngagement: Boolean(updateData?.data?.stakeholder_engagement),
@@ -410,9 +414,34 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               // Deep merge the loaded data with the default structure
               const completeData = deepMerge(defaultData, updateData.data);
               
+              // Ensure the date is in the correct format (yyyy-MM-dd)
+              if (completeData.meta && completeData.meta.date) {
+                try {
+                  const dateObj = new Date(completeData.meta.date);
+                  if (!isNaN(dateObj.getTime())) {
+                    // Format as yyyy-MM-dd
+                    const formattedDate = dateObj.toISOString().split('T')[0];
+                    console.log(`Form reset: converting date from ${completeData.meta.date} to ${formattedDate}`);
+                    completeData.meta.date = formattedDate;
+                  }
+                } catch (dateError) {
+                  console.error("Error formatting date during form reset:", dateError);
+                }
+              }
+              
               console.log("Prepared complete form data:", completeData);
               setFormData(completeData as WeeklyUpdateFormData);
+              
+              // Reset the form with the prepared data
               form.reset(completeData);
+              
+              // Explicitly set the date field to ensure it's properly registered
+              setTimeout(() => {
+                if (completeData.meta && completeData.meta.date) {
+                  console.log("Explicitly setting date after form reset:", completeData.meta.date);
+                  form.setValue("meta.date", completeData.meta.date);
+                }
+              }, 0);
             } else {
               console.warn("Update data missing or invalid format:", updateData);
               toast({
@@ -828,11 +857,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
         'Mentored two junior developers who are now contributing independently',
         'Improved team planning process resulting in better sprint outcomes'
       ]);
-      
-      form.setValue('personal_updates.leadership_focus', {
-        skill: 'Strategic delegation',
-        practice: 'Assigning more high-level tasks to senior team members and focusing on growth opportunities'
-      });
       
       form.setValue('personal_updates.reflections', [
         'Learned the importance of early stakeholder alignment on requirements',

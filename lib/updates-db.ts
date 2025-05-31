@@ -232,8 +232,20 @@ export async function getUpdateById(updateId: string): Promise<any> {
     const data = getDefaultDataStructure();
     
     // Update meta data from the database
+    // Ensure the date is properly formatted as yyyy-MM-dd for the form
+    let formattedDate = update.week_date;
+    try {
+      const dateObj = new Date(update.week_date);
+      if (!isNaN(dateObj.getTime())) {
+        formattedDate = dateObj.toISOString().split('T')[0]; // format as yyyy-MM-dd
+        console.log(`Converted date from ${update.week_date} to ${formattedDate}`);
+      }
+    } catch (e) {
+      console.error("Error formatting date:", e);
+    }
+    
     data.meta = {
-      date: update.week_date,
+      date: formattedDate,
       team_name: update.team_name,
       client_org: update.client_org
     };
@@ -459,10 +471,6 @@ export async function getUpdateById(updateId: string): Promise<any> {
       const personalUpdate = personalUpdatesResult.rows[0];
       personalUpdatesId = personalUpdate.id;
       
-      data.personal_updates.leadership_focus = {
-        skill: personalUpdate.leadership_focus_skill || '',
-        practice: personalUpdate.leadership_focus_practice || ''
-      };
       data.personal_updates.support_needed = personalUpdate.support_needed || '';
       
       // Clear default entries
@@ -580,10 +588,21 @@ export async function getUpdateById(updateId: string): Promise<any> {
     // Log the structure of the data we're returning
     console.log("Returning update data with sections:", Object.keys(data));
     
+    // Format the date consistently for the response
+    let formattedWeekDate = update.week_date;
+    try {
+      const dateObj = new Date(update.week_date);
+      if (!isNaN(dateObj.getTime())) {
+        formattedWeekDate = dateObj.toISOString().split('T')[0];
+      }
+    } catch (e) {
+      console.error("Error formatting weekDate for response:", e);
+    }
+    
     return {
       id: update.id,
       userId: update.user_id,
-      weekDate: update.week_date,
+      weekDate: formattedWeekDate,
       teamName: update.team_name,
       clientOrg: update.client_org,
       data: data,
@@ -1088,11 +1107,9 @@ export async function saveUpdate(
         personalUpdatesId = personalUpdatesResult.rows[0].id;
         await query(`
           UPDATE personal_updates
-          SET leadership_focus_skill = $1, leadership_focus_practice = $2, support_needed = $3
-          WHERE id = $4
+          SET support_needed = $1
+          WHERE id = $2
         `, [
-          personalUpdates.leadership_focus?.skill || null,
-          personalUpdates.leadership_focus?.practice || null,
           personalUpdates.support_needed || null,
           personalUpdatesId
         ]);
@@ -1100,14 +1117,12 @@ export async function saveUpdate(
         // Create new record
         const newPersonalUpdatesResult = await query(`
           INSERT INTO personal_updates (
-            update_id, leadership_focus_skill, leadership_focus_practice, support_needed
+            update_id, support_needed
           )
-          VALUES ($1, $2, $3, $4)
+          VALUES ($1, $2)
           RETURNING id
         `, [
           savedUpdate.id,
-          personalUpdates.leadership_focus?.skill || null,
-          personalUpdates.leadership_focus?.practice || null,
           personalUpdates.support_needed || null
         ]);
         personalUpdatesId = newPersonalUpdatesResult.rows[0].id;

@@ -38,8 +38,7 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
   const filteredPersonalWins = personal_updates?.personal_wins?.filter((item) => item?.trim() !== "") || []
   const filteredReflections = personal_updates?.reflections?.filter((item) => item?.trim() !== "") || []
   const filteredGoals = personal_updates?.goals?.filter((goal) => goal?.description?.trim() !== "") || []
-  const hasLeadershipFocus =
-    personal_updates?.leadership_focus?.skill?.trim() !== "" || personal_updates?.leadership_focus?.practice?.trim() !== ""
+  const hasLeadershipFocus = false
 
   // Team members updates - adding null/undefined checks
   const filteredTopContributors = team_members_updates?.top_contributors?.filter(
@@ -404,24 +403,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
               </div>
             )}
 
-            {/* Leadership Focus */}
-            {hasLeadershipFocus && (
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Leadership Focus</h3>
-                {personal_updates?.leadership_focus?.skill && (
-                  <div>
-                    <h4 className="text-sm font-medium">Focus Area</h4>
-                    <p>{personal_updates.leadership_focus.skill}</p>
-                  </div>
-                )}
-                {personal_updates?.leadership_focus?.practice && (
-                  <div>
-                    <h4 className="text-sm font-medium">How I'm Improving</h4>
-                    <p>{personal_updates.leadership_focus.practice}</p>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Reflections */}
             {filteredReflections.length > 0 && (

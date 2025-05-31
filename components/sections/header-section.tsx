@@ -29,13 +29,14 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
     // If there's a current date value, parse it and create a Date object
     if (currentDateValue) {
       try {
+        // Parse the date string into a Date object
         currentDateObj = new Date(currentDateValue)
+        
         // Validate that the date is valid
         if (isNaN(currentDateObj.getTime())) {
           currentDateObj = null
         }
       } catch (e) {
-        console.error("Error parsing date:", e)
         currentDateObj = null
       }
     }
@@ -104,8 +105,8 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
     })
     
     return fridays
-  }, [form.watch("meta.date")])
-
+  }, [form.watch("meta.date")]); // Update when date changes
+  
   return (
     <Card>
       <CardHeader>
@@ -126,60 +127,54 @@ export default function HeaderSection({ form }: HeaderSectionProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="meta.date">Report Week (Friday)</Label>
-            <Select
-              onValueChange={(value) => form.setValue("meta.date", value)}
+            <select
+              id="reportWeek"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 mt-1"
               value={form.watch("meta.date")}
+              onChange={(e) => form.setValue("meta.date", e.target.value)}
             >
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select Friday date" />
-              </SelectTrigger>
-              <SelectContent className="max-h-80">
-                {fridayDates.map((date) => (
-                  <SelectItem key={date.value} value={date.value}>
-                    {date.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="" disabled>Select Friday date</option>
+              {fridayDates.map((date) => (
+                <option key={date.value} value={date.value}>
+                  {date.label}
+                </option>
+              ))}
+            </select>
             <p className="text-xs text-muted-foreground mt-1">Select the Friday that marks the end of your report week</p>
           </div>
           <div>
             <Label htmlFor="meta.team_name">Team Name</Label>
-            <Select
-              onValueChange={(value) => form.setValue("meta.team_name", value)}
+            <select
+              id="teamName"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 mt-1"
               value={form.watch("meta.team_name")}
+              onChange={(e) => form.setValue("meta.team_name", e.target.value)}
             >
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select team" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Frontend Platform">Frontend Platform</SelectItem>
-                <SelectItem value="Backend Services">Backend Services</SelectItem>
-                <SelectItem value="Mobile Development">Mobile Development</SelectItem>
-                <SelectItem value="DevOps">DevOps</SelectItem>
-                <SelectItem value="QA & Testing">QA & Testing</SelectItem>
-              </SelectContent>
-            </Select>
+              <option value="" disabled>Select team</option>
+              <option value="Frontend Platform">Frontend Platform</option>
+              <option value="Backend Services">Backend Services</option>
+              <option value="Mobile Development">Mobile Development</option>
+              <option value="DevOps">DevOps</option>
+              <option value="QA & Testing">QA & Testing</option>
+            </select>
           </div>
         </div>
 
         <div>
           <Label htmlFor="meta.client_org">Client Organization</Label>
-          <Select
-            onValueChange={(value) => form.setValue("meta.client_org", value)}
+          <select
+            id="clientOrg"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 mt-1"
             value={form.watch("meta.client_org")}
+            onChange={(e) => form.setValue("meta.client_org", e.target.value)}
           >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select client" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Acme Corp">Acme Corp</SelectItem>
-              <SelectItem value="Globex Industries">Globex Industries</SelectItem>
-              <SelectItem value="Initech">Initech</SelectItem>
-              <SelectItem value="Umbrella Corporation">Umbrella Corporation</SelectItem>
-              <SelectItem value="Stark Industries">Stark Industries</SelectItem>
-            </SelectContent>
-          </Select>
+            <option value="" disabled>Select client</option>
+            <option value="Acme Corp">Acme Corp</option>
+            <option value="Globex Industries">Globex Industries</option>
+            <option value="Initech">Initech</option>
+            <option value="Umbrella Corporation">Umbrella Corporation</option>
+            <option value="Stark Industries">Stark Industries</option>
+          </select>
         </div>
       </CardContent>
     </Card>
