@@ -53,22 +53,24 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
         <div>
           <Label>Accomplishments</Label>
           {accomplishments.map((item, index) => (
-            <div key={`accomplishment-${index}`} className="flex items-center gap-2 mt-2">
-              <InputWithAI
-                placeholder="Completed feature X ahead of schedule"
-                value={item}
-                aiContext="accomplishments"
-                onChange={(e) => {
-                  const updated = [...accomplishments]
-                  updated[index] = e.target.value
-                  setValue("delivery_performance.accomplishments", updated)
-                }}
-                onValueChange={(value) => {
-                  const updated = [...accomplishments]
-                  updated[index] = value
-                  setValue("delivery_performance.accomplishments", updated)
-                }}
-              />
+            <div key={`accomplishment-${index}`} className="flex items-center gap-2 mt-2 w-full">
+              <div className="flex-grow">
+                <InputWithAI
+                  placeholder="Completed feature X ahead of schedule"
+                  value={item}
+                  aiContext="accomplishments"
+                  onChange={(e) => {
+                    const updated = [...accomplishments]
+                    updated[index] = e.target.value
+                    setValue("delivery_performance.accomplishments", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...accomplishments]
+                    updated[index] = value
+                    setValue("delivery_performance.accomplishments", updated)
+                  }}
+                />
+              </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => removeAccomplishment(index)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -82,22 +84,24 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
         <div>
           <Label>Misses & Delays (optional)</Label>
           {missesDelays.map((item, index) => (
-            <div key={`miss-${index}`} className="flex items-center gap-2 mt-2">
-              <InputWithAI
-                placeholder="API integration delayed due to vendor issues"
-                value={item}
-                aiContext="misses_delays"
-                onChange={(e) => {
-                  const updated = [...missesDelays]
-                  updated[index] = e.target.value
-                  setValue("delivery_performance.misses_delays", updated)
-                }}
-                onValueChange={(value) => {
-                  const updated = [...missesDelays]
-                  updated[index] = value
-                  setValue("delivery_performance.misses_delays", updated)
-                }}
-              />
+            <div key={`miss-${index}`} className="flex items-center gap-2 mt-2 w-full">
+              <div className="flex-grow">
+                <InputWithAI
+                  placeholder="API integration delayed due to vendor issues"
+                  value={item}
+                  aiContext="misses_delays"
+                  onChange={(e) => {
+                    const updated = [...missesDelays]
+                    updated[index] = e.target.value
+                    setValue("delivery_performance.misses_delays", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...missesDelays]
+                    updated[index] = value
+                    setValue("delivery_performance.misses_delays", updated)
+                  }}
+                />
+              </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => removeMissDelay(index)}>
                 <Trash2 className="h-4 w-4" />
               </Button>

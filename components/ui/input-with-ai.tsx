@@ -55,11 +55,11 @@ export default function InputWithAI({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
         value={localValue}
         onChange={handleChange}
-        className={`pr-10 ${className || ""}`}
+        className={`pr-10 w-full ${className || ""}`}
         {...props}
       />
       <div className="absolute top-1/2 right-1 transform -translate-y-1/2">
