@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Printer, X } from "lucide-react"
 import ReportPreview from "@/components/report-preview"
 import type { WeeklyUpdateFormData } from "@/components/weekly-update-form"
+import { useAuth } from "@/lib/auth-context"
 
 export default function UpdatePrintPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
   const [update, setUpdate] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -77,7 +79,7 @@ export default function UpdatePrintPage() {
           <div className="bg-white rounded-lg shadow print:shadow-none">
             <div className="p-6 print:p-0">
               <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold">Weekly Update</h1>
+                <h1 className="text-2xl font-bold">Weekly Update - {user?.name || "Team Lead"}</h1>
               </div>
               
               <ReportPreview data={update.data as WeeklyUpdateFormData} />
