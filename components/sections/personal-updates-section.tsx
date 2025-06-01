@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import TextareaWithAI from "../ui/textarea-with-ai"
 import { Input } from "@/components/ui/input"
+import InputWithAI from "../ui/input-with-ai"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -75,12 +77,18 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
             <Label>What went well this week? Any personal or professional wins to share?</Label>
             {personalWins.map((item, index) => (
               <div key={`win-${index}`} className="flex items-center gap-2 mt-2">
-                <Input
+                <InputWithAI
                   placeholder="Successfully led a cross-functional meeting"
                   value={item}
+                  aiContext="personal_wins"
                   onChange={(e) => {
                     const updated = [...personalWins]
                     updated[index] = e.target.value
+                    setValue("personal_updates.personal_wins", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...personalWins]
+                    updated[index] = value
                     setValue("personal_updates.personal_wins", updated)
                   }}
                 />
@@ -106,12 +114,18 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
             <Label>What did you learn this week? Any mindset shifts or challenges you encountered?</Label>
             {reflections.map((item, index) => (
               <div key={`reflection-${index}`} className="flex items-center gap-2 mt-2">
-                <Input
+                <InputWithAI
                   placeholder="Learned the importance of setting clear expectations"
                   value={item}
+                  aiContext="reflections"
                   onChange={(e) => {
                     const updated = [...reflections]
                     updated[index] = e.target.value
+                    setValue("personal_updates.reflections", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...reflections]
+                    updated[index] = value
                     setValue("personal_updates.reflections", updated)
                   }}
                 />
@@ -146,10 +160,12 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
               {goals.map((goal, index) => (
                 <TableRow key={`goal-${index}`}>
                   <TableCell>
-                    <Input
+                    <InputWithAI
                       placeholder="Improve team velocity by 10%"
                       value={goal.description}
+                      aiContext="goal_description"
                       onChange={(e) => updateGoalField(index, "description", e.target.value)}
+                      onValueChange={(value) => updateGoalField(index, "description", value)}
                     />
                   </TableCell>
                   <TableCell>
@@ -180,10 +196,12 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <Input
+                    <InputWithAI
                       placeholder="Short update on progress"
                       value={goal.update}
+                      aiContext="goal_update"
                       onChange={(e) => updateGoalField(index, "update", e.target.value)}
+                      onValueChange={(value) => updateGoalField(index, "update", value)}
                     />
                   </TableCell>
                   <TableCell>
@@ -214,10 +232,11 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
             <Label htmlFor="personal_updates.support_needed">
               What support do you need from your leader or peers? Any blockers or decisions you'd like input on?
             </Label>
-            <Textarea
+            <TextareaWithAI
               id="personal_updates.support_needed"
               placeholder="Need guidance on prioritizing competing deadlines"
               className="mt-1"
+              aiContext="support_needed"
               value={supportNeeded}
               onChange={(e) => setValue("personal_updates.support_needed", e.target.value)}
             />

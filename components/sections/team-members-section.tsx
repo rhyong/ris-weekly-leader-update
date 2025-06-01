@@ -5,8 +5,9 @@ import type { WeeklyUpdateFormData } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import TextareaWithAI from "../ui/textarea-with-ai"
 import { Input } from "@/components/ui/input"
+import InputWithAI from "../ui/input-with-ai"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2 } from "lucide-react"
 
@@ -76,11 +77,15 @@ export default function TeamMembersUpdatesSection({ form }: TeamMembersUpdatesSe
             <Label htmlFor="team_members_updates.people_changes">
               Any people issues or changes (e.g., new joiners, exits, leaves)?
             </Label>
-            <Textarea
+            <TextareaWithAI
               id="team_members_updates.people_changes"
               placeholder="John is joining next week, Sarah is taking parental leave starting in 2 weeks"
               className="mt-1"
-              {...register("team_members_updates.people_changes")}
+              aiContext="people_changes"
+              value={peopleChanges}
+              onChange={(e) => {
+                setValue("team_members_updates.people_changes", e.target.value);
+              }}
             />
           </div>
         </CardContent>
@@ -107,30 +112,36 @@ export default function TeamMembersUpdatesSection({ form }: TeamMembersUpdatesSe
 
               <div>
                 <Label>Name</Label>
-                <Input
+                <InputWithAI
                   placeholder="Sarah Johnson"
                   value={contributor.name}
+                  aiContext="contributor_name"
                   onChange={(e) => updateTopContributor(index, "name", e.target.value)}
+                  onValueChange={(value) => updateTopContributor(index, "name", value)}
                   className="mt-1"
                 />
               </div>
 
               <div>
                 <Label>Achievement</Label>
-                <Textarea
+                <TextareaWithAI
                   placeholder="Led a successful demo with the client that helped clarify scope and gained stakeholder trust"
                   value={contributor.achievement}
+                  aiContext="achievements"
                   onChange={(e) => updateTopContributor(index, "achievement", e.target.value)}
+                  onValueChange={(value) => updateTopContributor(index, "achievement", value)}
                   className="mt-1"
                 />
               </div>
 
               <div>
                 <Label>Recognition</Label>
-                <Input
+                <InputWithAI
                   placeholder="Public praise in team meeting, $50 gift card"
                   value={contributor.recognition}
+                  aiContext="recognition"
                   onChange={(e) => updateTopContributor(index, "recognition", e.target.value)}
+                  onValueChange={(value) => updateTopContributor(index, "recognition", value)}
                   className="mt-1"
                 />
               </div>
@@ -164,30 +175,36 @@ export default function TeamMembersUpdatesSection({ form }: TeamMembersUpdatesSe
 
               <div>
                 <Label>Name</Label>
-                <Input
+                <InputWithAI
                   placeholder="James Smith"
                   value={member.name}
+                  aiContext="member_name"
                   onChange={(e) => updateMemberNeedingAttention(index, "name", e.target.value)}
+                  onValueChange={(value) => updateMemberNeedingAttention(index, "name", value)}
                   className="mt-1"
                 />
               </div>
 
               <div>
                 <Label>Issue</Label>
-                <Textarea
+                <TextareaWithAI
                   placeholder="Struggling with time management and falling behind on API integration"
                   value={member.issue}
+                  aiContext="member_issue"
                   onChange={(e) => updateMemberNeedingAttention(index, "issue", e.target.value)}
+                  onValueChange={(value) => updateMemberNeedingAttention(index, "issue", value)}
                   className="mt-1"
                 />
               </div>
 
               <div>
                 <Label>Support Plan</Label>
-                <Textarea
+                <TextareaWithAI
                   placeholder="Set up daily check-ins and assigned a peer mentor"
                   value={member.support_plan}
+                  aiContext="support_plan"
                   onChange={(e) => updateMemberNeedingAttention(index, "support_plan", e.target.value)}
+                  onValueChange={(value) => updateMemberNeedingAttention(index, "support_plan", value)}
                   className="mt-1"
                 />
               </div>

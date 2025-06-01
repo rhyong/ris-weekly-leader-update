@@ -82,6 +82,39 @@ function createPromptForContext(text: string, context: string): string {
 
     case "support_needed":
       return `Enhance this support request to be specific about what's needed, why, and by when: "${text}"`;
+      
+    case "people_changes":
+      return `Improve this description of team composition changes and people issues to be clear and informative: "${text}"`;
+      
+    case "contributor_name":
+      return `Improve this team member name to be more professional and complete: "${text}"`;
+      
+    case "achievements":
+      return `Enhance this description of a team member's achievement to highlight their impact and contribution: "${text}"`;
+      
+    case "recognition":
+      return `Improve this description of how a team member was recognized for their contributions: "${text}"`;
+      
+    case "member_name":
+      return `Improve this team member name to be more professional and complete: "${text}"`;
+      
+    case "member_issue":
+      return `Enhance this description of a team member's challenge to be clear, constructive, and specific: "${text}"`;
+      
+    case "support_plan":
+      return `Improve this support plan for a team member to be specific, actionable, and supportive: "${text}"`;
+      
+    case "personal_wins":
+      return `Enhance this description of a personal win to be clear, specific, and highlight the impact: "${text}"`;
+      
+    case "reflections":
+      return `Improve this personal reflection to be insightful and show learning: "${text}"`;
+      
+    case "goal_description":
+      return `Enhance this goal description to be specific, measurable, and impactful: "${text}"`;
+      
+    case "goal_update":
+      return `Improve this goal update to clearly communicate progress, challenges, and next steps: "${text}"`;
 
     default:
       return `Enhance this professional text to be more clear, concise, and impactful: "${text}"`;
