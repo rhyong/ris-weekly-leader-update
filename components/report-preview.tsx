@@ -52,7 +52,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
       {/* Header */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">{meta?.team_name || 'Team'} Weekly Update</h2>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">{meta?.date || new Date().toLocaleDateString()}</p>
             <p className="text-sm text-muted-foreground">{meta?.client_org || 'Organization'}</p>

@@ -2,10 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Printer, ArrowLeft } from "lucide-react"
+import { Printer, ArrowLeft, FileDown } from "lucide-react"
 import ReportPreview from "@/components/report-preview"
 import { format } from "date-fns"
 import type { WeeklyUpdateFormData } from "@/components/weekly-update-form"
+import { useRouter } from "next/navigation"
 
 interface WeeklyUpdateViewProps {
   data: WeeklyUpdateFormData
@@ -15,6 +16,7 @@ interface WeeklyUpdateViewProps {
   showBackButton?: boolean
   onBack?: () => void
   className?: string
+  updateId?: string
 }
 
 export default function WeeklyUpdateView({
@@ -25,9 +27,18 @@ export default function WeeklyUpdateView({
   showBackButton = false,
   onBack,
   className = "",
+  updateId,
 }: WeeklyUpdateViewProps) {
+  const router = useRouter()
+  
   const handlePrint = () => {
-    window.print()
+    // If we have an update ID, open the print view in a new tab
+    if (updateId) {
+      window.open(`/update/${updateId}/print`, '_blank')
+    } else {
+      // Fall back to regular printing if no ID is available
+      window.print()
+    }
   }
 
   const formattedDate = date ? format(new Date(date), "MMMM d, yyyy") : (data.meta?.date ? format(new Date(data.meta.date), "MMMM d, yyyy") : format(new Date(), "MMMM d, yyyy"))
@@ -43,7 +54,6 @@ export default function WeeklyUpdateView({
               <ArrowLeft className="h-4 w-4 mr-2" /> Back
             </Button>
           )}
-          <h1 className="text-2xl font-bold">Weekly Update</h1>
           <p className="text-muted-foreground">
             {formattedDate}
             {displayTeamName && ` • ${displayTeamName}`}
@@ -51,7 +61,7 @@ export default function WeeklyUpdateView({
           </p>
         </div>
         <Button variant="outline" onClick={handlePrint} className="print:hidden">
-          <Printer className="h-4 w-4 mr-2" /> Print Report
+          <Printer className="h-4 w-4 mr-2" /> Print Review
         </Button>
       </div>
 

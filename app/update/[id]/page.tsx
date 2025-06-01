@@ -73,6 +73,7 @@ export default function UpdateViewPage() {
             clientOrg={update.clientOrg}
             showBackButton={true}
             onBack={handleBack}
+            updateId={params.id as string}
           />
 
           <div className="mt-6 print:hidden">

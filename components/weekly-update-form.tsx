@@ -1004,7 +1004,11 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               </div>
             ) : (
               <div>
-                <WeeklyUpdateView data={formData} showBackButton={false} />
+                <WeeklyUpdateView 
+                  data={formData} 
+                  showBackButton={false} 
+                  updateId={savedUpdateId || undefined}
+                />
 
                 <div className="flex justify-end mt-6 print:hidden">
                   <Button onClick={viewInNewTab}>Open in New Tab</Button>
