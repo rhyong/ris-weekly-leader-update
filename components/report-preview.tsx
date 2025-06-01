@@ -52,10 +52,11 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
       {/* Header */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">{meta?.date || new Date().toLocaleDateString()}</p>
-            <p className="text-sm text-muted-foreground">{meta?.client_org || 'Organization'}</p>
-          </div>
+          <p className="text-gray-500">
+            {meta?.date || new Date().toLocaleDateString()}{" • "}
+            {meta.team_name || "Team"}{" • "}
+            {meta?.client_org || 'Organization'}
+          </p>
         </div>
 
         {top_3_bullets && (

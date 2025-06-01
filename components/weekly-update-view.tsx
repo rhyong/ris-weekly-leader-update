@@ -54,11 +54,6 @@ export default function WeeklyUpdateView({
               <ArrowLeft className="h-4 w-4 mr-2" /> Back
             </Button>
           )}
-          <p className="text-muted-foreground">
-            {formattedDate}
-            {displayTeamName && ` • ${displayTeamName}`}
-            {displayClientOrg && ` • ${displayClientOrg}`}
-          </p>
         </div>
         <Button variant="outline" onClick={handlePrint} className="print:hidden">
           <Printer className="h-4 w-4 mr-2" /> Print Review

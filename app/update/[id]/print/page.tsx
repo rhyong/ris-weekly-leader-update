@@ -77,11 +77,7 @@ export default function UpdatePrintPage() {
           <div className="bg-white rounded-lg shadow print:shadow-none">
             <div className="p-6 print:p-0">
               <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold">{update.teamName || "Team"} Weekly Update</h1>
-                <p className="text-gray-500">
-                  {update.weekDate ? new Date(update.weekDate).toLocaleDateString() : ""}
-                  {update.clientOrg && ` • ${update.clientOrg}`}
-                </p>
+                <h1 className="text-2xl font-bold">Weekly Update</h1>
               </div>
               
               <ReportPreview data={update.data as WeeklyUpdateFormData} />
