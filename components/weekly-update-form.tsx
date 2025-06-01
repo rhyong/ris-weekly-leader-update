@@ -635,6 +635,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
         clientOrg: data.meta.client_org,
         data: data,
         isNewUpdate: isNewUpdate, // Pass this flag to API
+        existingUpdateId: savedUpdateId, // Pass the current update ID if we're editing
       };
       
       console.log("Sending request to /api/updates:", JSON.stringify(requestBody, null, 2));
@@ -650,24 +651,85 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       console.log("API Response status:", response.status, response.statusText);
       
       if (!response.ok) {
-        let errorInfo = "Unknown error";
+        console.log(`Response not OK: ${response.status} ${response.statusText}`);
+        
+        // Default error message
+        let errorMessage = "Failed to save your weekly update";
+        
         try {
-          // Try to parse the error response as JSON
-          const errorData = await response.json();
-          errorInfo = JSON.stringify(errorData);
-          console.error("API error response:", errorData);
+          // Safely attempt to parse the response as JSON
+          const errorResponse = await response.json();
+          console.log("API error response:", errorResponse);
+          
+          // Check if we have a structured error response
+          if (errorResponse && typeof errorResponse === 'object') {
+            // Special handling for duplicate date errors
+            if (errorResponse.error === "Duplicate week date") {
+              // Set a more specific error message
+              errorMessage = errorResponse.message || "A weekly update already exists for this date. Please edit that update from your history instead.";
+              
+              // Show the error message
+              toast({
+                title: "Duplicate Report Week Date",
+                description: errorMessage,
+                variant: "destructive",
+              });
+              
+              // If we received a duplicate update ID, offer to navigate to it
+              if (errorResponse.duplicateUpdateId) {
+                // Add a second toast with a button to navigate to the existing update
+                toast({
+                  title: "Edit Existing Update",
+                  description: (
+                    <div className="flex items-center justify-between">
+                      <span>Would you like to edit the existing update?</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => router.push(`/update/${errorResponse.duplicateUpdateId}/edit`)}
+                      >
+                        Go to Update
+                      </Button>
+                    </div>
+                  ),
+                  duration: 10000, // Show for 10 seconds
+                });
+              }
+              
+              setIsSaving(false);
+              return false;
+            } 
+            // For other structured errors, use the provided message if available
+            else if (errorResponse.message) {
+              errorMessage = errorResponse.message;
+            }
+          }
         } catch (parseError) {
+          console.log("Error parsing JSON response:", parseError);
           // If it's not JSON, try to get it as text
           try {
             const errorText = await response.text();
-            errorInfo = errorText;
-            console.error("API error response text:", errorText);
+            if (errorText) {
+              console.log("API error response text:", errorText);
+              // Only use text as error message if it's not empty or HTML
+              if (errorText.length < 100 && !errorText.includes("<html>")) {
+                errorMessage = errorText;
+              }
+            }
           } catch (textError) {
-            console.error("Could not parse error response");
+            console.log("Could not parse error response as text:", textError);
           }
         }
         
-        throw new Error(`Failed to save update: ${response.status} ${response.statusText} - ${errorInfo}`);
+        // Generic error handling for all other errors
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        
+        setIsSaving(false);
+        return false;
       }
 
       const result = await response.json();

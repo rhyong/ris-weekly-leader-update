@@ -105,7 +105,32 @@ export async function POST(request: Request) {
       // Handle whether to create new or update existing
       let effectiveWeekDate = weekDate;
       
-      // If creating a new update but one might already exist for this date, make the date unique
+      // Check for duplicate Report Week dates
+      // Get all updates for this user
+      const userUpdates = await getUpdatesByUserId(userId);
+      
+      // Format the weekDate to match the database format (strip time component if present)
+      const formattedWeekDate = new Date(weekDate).toISOString().split('T')[0];
+      
+      // Look for any existing updates with the same week date
+      const duplicateUpdate = userUpdates.find(update => {
+        // Format the stored date the same way for comparison
+        const updateDate = new Date(update.week_date).toISOString().split('T')[0];
+        // Exclude the current update if we're editing
+        return updateDate === formattedWeekDate && 
+               (!existingUpdateId || update.id !== existingUpdateId);
+      });
+      
+      if (duplicateUpdate) {
+        console.error("Duplicate week date found:", formattedWeekDate);
+        return NextResponse.json({ 
+          error: "Duplicate week date", 
+          message: "A weekly update already exists for this date. Please edit that update from your history instead of creating a duplicate.",
+          duplicateUpdateId: duplicateUpdate.id
+        }, { status: 400 });
+      }
+      
+      // If creating a new update
       if (isNewUpdate === true) {
         console.log("Processing as a new update");
       } 
