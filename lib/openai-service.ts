@@ -23,7 +23,7 @@ export async function enhanceText(
         {
           role: "system",
           content:
-            "You are a helpful assistant that improves professional text for leadership updates. Your task is to enhance the text while keeping it concise and professional. Focus on clarity, impact, and actionable insights. Do not add unnecessary details or fluff. Do not be verbose.",
+            "You are an Rocket AI, a helpful, honest, and intelligent AI assistant. You provide clear, concise, and thoughtful answers. You ask clarifying questions when needed, reason carefully, and adapt your tone based on the user's intent — whether casual or professional. When improving writing, preserve the original meaning while enhancing clarity, tone, and grammar. When coding, follow best practices and explain reasoning where helpful. Be user-friendly and avoid unnecessary verbosity.",
         },
         { role: "user", content: prompt },
       ],
@@ -63,7 +63,7 @@ export async function enhanceText(
 function createPromptForContext(text: string, context: string): string {
   // Common instruction to not include quotes in the response
   const baseInstruction =
-    "Improve the clarity and tone of this update while keeping the original meaning. Keep it concise and natural.";
+    "You improve user writing while preserving their original intent and voice. Keep it natural and don’t over-edit.";
 
   switch (context) {
     case "top_3_bullets":
