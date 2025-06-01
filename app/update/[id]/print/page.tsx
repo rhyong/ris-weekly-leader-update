@@ -112,12 +112,6 @@ export default function UpdatePrintPage() {
         </div>
       ) : update && update.data ? (
         <div className="w-full max-w-4xl">
-          <div className="flex justify-start mb-6 print:hidden">
-            <Button variant="outline" onClick={handleClose} size="sm">
-              <X className="h-4 w-4 mr-2" /> Close
-            </Button>
-          </div>
-          
           <div className="bg-white rounded-lg shadow print:shadow-none">
             <div className="p-6 print:p-0">
               <div className="text-center mb-6">

@@ -412,7 +412,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
       <div className="pt-4 border-t">
         <div className="flex justify-between text-sm text-muted-foreground">
           <p>Generated on {new Date().toLocaleDateString()}</p>
-          <p>AI Recap: Team is on track with key deliverables, monitoring resource constraints.</p>
         </div>
       </div>
     </div>
