@@ -123,7 +123,7 @@ export default function HistoryPage() {
         <Card>
           <CardContent className="py-10 text-center">
             <p className="text-muted-foreground mb-4">You haven't created any weekly updates yet</p>
-            <Button onClick={() => router.push("/")}>Create Your First Update</Button>
+            <Button onClick={() => router.push("/update/add")}>Create Your First Update</Button>
           </CardContent>
         </Card>
       ) : (

@@ -276,7 +276,7 @@ export default function Dashboard() {
               </p>
             </CardContent>
             <CardFooter>
-              <Link href="/add">
+              <Link href="/update/add">
                 <Button>Create Your First Update</Button>
               </Link>
             </CardFooter>
