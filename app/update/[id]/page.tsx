@@ -75,12 +75,6 @@ export default function UpdateViewPage() {
             onBack={handleBack}
             updateId={params.id as string}
           />
-
-          <div className="mt-6 print:hidden">
-            <Button variant="outline" onClick={handleBack}>
-              Back to History
-            </Button>
-          </div>
         </>
       ) : !error ? (
         <Alert className="mb-6">
