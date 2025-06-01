@@ -38,7 +38,19 @@ export async function enhanceText(
       throw new Error("Failed to enhance text - empty response");
     }
 
-    return enhancedText;
+    // Remove any surrounding quotes that might be returned by the model
+    // This handles both single and double quotes
+    let cleanedText = enhancedText;
+
+    // Check if the text begins and ends with matching quotes
+    if (
+      (enhancedText.startsWith('"') && enhancedText.endsWith('"')) ||
+      (enhancedText.startsWith("'") && enhancedText.endsWith("'"))
+    ) {
+      cleanedText = enhancedText.substring(1, enhancedText.length - 1);
+    }
+
+    return cleanedText;
   } catch (error: any) {
     console.error("Error enhancing text with OpenAI:", error);
     throw new Error(
@@ -49,74 +61,78 @@ export async function enhanceText(
 
 // Helper function to create appropriate prompt based on context
 function createPromptForContext(text: string, context: string): string {
+  // Common instruction to not include quotes in the response
+  const baseInstruction =
+    "Improve the clarity and tone of this update while keeping the original meaning. Keep it concise and natural.";
+
   switch (context) {
     case "top_3_bullets":
-      return `Improve these top 3 bullets for a leadership update. Make them concise (under 35 words), impactful, and easy to scan. Maintain emojis if present: "${text}"`;
+      return `Improve these top 3 bullets for a leadership update. Make them concise (under 35 words), impactful, and easy to scan. Maintain emojis if present, add emoji 🟢 and 🟡 for wherever make sense. ${baseInstruction} Text to improve: "${text}"`;
 
     case "team_health":
-      return `Improve this summary about team health. Be concise but insightful: "${text}"`;
+      return `Improve this summary about team health. Be concise but insightful. ${baseInstruction} Text to improve: "${text}"`;
 
     case "overall_status":
-      return `Enhance this team status update to be clear, balanced, and actionable: "${text}"`;
+      return `Enhance this team status update to be clear, balanced, and actionable. ${baseInstruction} Text to improve: "${text}"`;
 
     case "accomplishments":
-      return `Improve this team accomplishment to highlight impact and value. Be specific and concise: "${text}"`;
+      return `Improve this team accomplishment to highlight impact and value. ${baseInstruction} Text to improve: "${text}"`;
 
     case "misses_delays":
-      return `Improve this description of a missed deadline or delay. Be honest but constructive, include context and next steps if possible: "${text}"`;
+      return `Improve this description of a missed deadline or delay. Be honest but constructive, include context and next steps if possible. ${baseInstruction} Text to improve: "${text}"`;
 
     case "stakeholder_feedback":
-      return `Improve this stakeholder feedback note to be clear and actionable: "${text}"`;
+      return `Improve this stakeholder feedback note to be clear and actionable. ${baseInstruction} Text to improve: "${text}"`;
 
     case "escalations":
-      return `Enhance this escalation text to be clear about the issue, impact, and needed decision: "${text}"`;
+      return `Enhance this escalation text to be clear about the issue, impact, and needed decision. ${baseInstruction} Text to improve: "${text}"`;
 
     case "risks":
-      return `Improve this risk description to clearly communicate severity, impact, and mitigations if applicable: "${text}"`;
+      return `Improve this risk description to clearly communicate severity, impact, and mitigations if applicable. ${baseInstruction} Text to improve: "${text}"`;
 
     case "wins":
-      return `Enhance this win description to highlight the achievement and its value: "${text}"`;
+      return `Enhance this win description to highlight the achievement and its value. ${baseInstruction} Text to improve: "${text}"`;
 
     case "growth_opportunities":
-      return `Improve this description of a growth opportunity to be specific and actionable: "${text}"`;
+      return `Improve this description of a growth opportunity to be specific and actionable. ${baseInstruction} Text to improve: "${text}"`;
 
     case "support_needed":
-      return `Enhance this support request to be specific about what's needed, why, and by when: "${text}"`;
-      
+      return `Enhance this support request to be specific about what's needed, why, and by when. ${baseInstruction} Text to improve: "${text}"`;
+
     case "people_changes":
-      return `Improve this description of team composition changes and people issues to be clear and informative: "${text}"`;
-      
+      return `Improve this description of team composition changes and people issues to be clear and informative. ${baseInstruction} Text to improve: "${text}"`;
+
     case "contributor_name":
-      return `Improve this team member name to be more professional and complete: "${text}"`;
-      
+      return `Improve this team member name to be more professional and complete. ${baseInstruction} Text to improve: "${text}"`;
+
     case "achievements":
-      return `Enhance this description of a team member's achievement to highlight their impact and contribution: "${text}"`;
-      
+      return `Enhance this description of a team member's achievement to highlight their impact and contribution. ${baseInstruction} Text to improve: "${text}"`;
+
     case "recognition":
-      return `Improve this description of how a team member was recognized for their contributions: "${text}"`;
-      
+      return `Improve this description of how a team member was recognized for their contributions. ${baseInstruction} Text to improve: "${text}"`;
+
     case "member_name":
-      return `Improve this team member name to be more professional and complete: "${text}"`;
-      
+      return `Improve this team member name to be more professional and complete. ${baseInstruction} Text to improve: "${text}"`;
+
     case "member_issue":
-      return `Enhance this description of a team member's challenge to be clear, constructive, and specific: "${text}"`;
-      
+      return `Enhance this description of a team member's challenge to be clear, constructive, and specific. ${baseInstruction} Text to improve: "${text}"`;
+
     case "support_plan":
-      return `Improve this support plan for a team member to be specific, actionable, and supportive: "${text}"`;
-      
+      return `Improve this support plan for a team member to be specific, actionable, and supportive. ${baseInstruction} Text to improve: "${text}"`;
+
     case "personal_wins":
-      return `Enhance this description of a personal win to be clear, specific, and highlight the impact: "${text}"`;
-      
+      return `Enhance this description of a personal win to be clear, specific, and highlight the impact. ${baseInstruction} Text to improve: "${text}"`;
+
     case "reflections":
-      return `Improve this personal reflection to be insightful and show learning: "${text}"`;
-      
+      return `Improve this personal reflection to be insightful and show learning. ${baseInstruction} Text to improve: "${text}"`;
+
     case "goal_description":
-      return `Enhance this goal description to be specific, measurable, and impactful: "${text}"`;
-      
+      return `Enhance this goal description to be specific, measurable, and impactful. ${baseInstruction} Text to improve: "${text}"`;
+
     case "goal_update":
-      return `Improve this goal update to clearly communicate progress, challenges, and next steps: "${text}"`;
+      return `Improve this goal update to clearly communicate progress, challenges, and next steps. ${baseInstruction} Text to improve: "${text}"`;
 
     default:
-      return `Enhance this professional text to be more clear, concise, and impactful: "${text}"`;
+      return `Enhance this professional text to be more clear, concise, and impactful. ${baseInstruction} Text to improve: "${text}"`;
   }
 }
