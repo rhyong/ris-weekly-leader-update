@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData, TrafficLight } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,13 +37,57 @@ export default function RisksEscalationsSection({ form }: RisksEscalationsSectio
     setValue("risks_escalations.risks", updated)
   }
 
+  interface EscalationItem {
+    id: string;
+    text: string;
+  }
+  
+  // Convert array of strings to array of objects with stable IDs
+  const [escalationsWithIds, setEscalationsWithIds] = useState<EscalationItem[]>(() => {
+    return Array.isArray(escalations) 
+      ? escalations.map((text, i) => ({ id: `escalation-${Date.now()}-${i}`, text }))
+      : [{ id: `escalation-${Date.now()}`, text: '' }];
+  });
+  
+  // Sync when escalations change externally (like form load)
+  useEffect(() => {
+    if (Array.isArray(escalations)) {
+      // Only update if the content is different to avoid loops
+      const escalationTexts = escalationsWithIds.map(item => item.text);
+      const hasChanges = escalations.length !== escalationTexts.length || 
+        escalations.some((text, i) => text !== escalationTexts[i]);
+      
+      if (hasChanges) {
+        setEscalationsWithIds(escalations.map((text, i) => ({ id: `escalation-${Date.now()}-${i}`, text })));
+      }
+    }
+  }, [escalations]);
+
   const addEscalation = () => {
-    setValue("risks_escalations.escalations", [...escalations, ""])
+    const newItems = [...escalationsWithIds, { id: `escalation-${Date.now()}`, text: "" }];
+    setEscalationsWithIds(newItems);
+    
+    // Update the form with just the text values
+    const textValues = newItems.map(item => item.text);
+    setValue("risks_escalations.escalations", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
-  const removeEscalation = (index: number) => {
-    const updated = escalations.filter((_, i) => i !== index)
-    setValue("risks_escalations.escalations", updated.length ? updated : [""])
+  const removeEscalation = (idToRemove: string) => {
+    const updatedItems = escalationsWithIds.filter(item => item.id !== idToRemove);
+    const finalItems = updatedItems.length ? updatedItems : [{ id: `escalation-${Date.now()}`, text: '' }];
+    setEscalationsWithIds(finalItems);
+    
+    // Update the form with just the text values
+    const textValues = finalItems.map(item => item.text);
+    setValue("risks_escalations.escalations", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
   // Determine overall risk traffic light (worst case)
@@ -118,24 +163,43 @@ export default function RisksEscalationsSection({ form }: RisksEscalationsSectio
 
         <div>
           <Label>Escalations</Label>
-          {escalations.map((item, index) => (
-            <div key={`escalation-${index}`} className="flex items-center gap-2 mt-2">
-              <InputWithAI
+          {escalationsWithIds.map((item) => (
+            <div key={item.id} className="grid grid-cols-[1fr,auto] gap-2 mt-2">
+              <TextareaWithAI
                 placeholder="Need VP approval for additional resources"
-                value={item}
+                value={item.text}
                 aiContext="escalations"
+                className="min-h-[100px] w-full"
                 onChange={(e) => {
-                  const updated = [...escalations]
-                  updated[index] = e.target.value
-                  setValue("risks_escalations.escalations", updated)
+                  const updated = escalationsWithIds.map(escalation => 
+                    escalation.id === item.id ? { ...escalation, text: e.target.value } : escalation
+                  );
+                  setEscalationsWithIds(updated);
+                  
+                  // Update the form with just the text values
+                  const textValues = updated.map(escalation => escalation.text);
+                  setValue("risks_escalations.escalations", textValues, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                    shouldTouch: true
+                  });
                 }}
                 onValueChange={(value) => {
-                  const updated = [...escalations]
-                  updated[index] = value
-                  setValue("risks_escalations.escalations", updated)
+                  const updated = escalationsWithIds.map(escalation => 
+                    escalation.id === item.id ? { ...escalation, text: value } : escalation
+                  );
+                  setEscalationsWithIds(updated);
+                  
+                  // Update the form with just the text values
+                  const textValues = updated.map(escalation => escalation.text);
+                  setValue("risks_escalations.escalations", textValues, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                    shouldTouch: true
+                  });
                 }}
               />
-              <Button type="button" variant="ghost" size="icon" onClick={() => removeEscalation(index)}>
+              <Button type="button" variant="ghost" size="icon" className="mt-1" onClick={() => removeEscalation(item.id)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>

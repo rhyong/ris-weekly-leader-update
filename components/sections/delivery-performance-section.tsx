@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Plus, Trash2 } from "lucide-react"
 import TrafficLightIndicator from "../ui/traffic-light-indicator"
 import InputWithAI from "../ui/input-with-ai"
+import TextareaWithAI from "../ui/textarea-with-ai"
 
 // Define a typed item with an ID
 interface AccomplishmentItem {
@@ -164,46 +165,46 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
         <div>
           <Label>Accomplishments</Label>
           {accomplishmentsWithIds.map((item) => (
-            <div key={item.id} className="flex items-center gap-2 mt-2 w-full">
-              <div className="flex-grow">
-                <InputWithAI
-                  placeholder="Completed feature X ahead of schedule"
-                  value={item.text}
-                  aiContext="accomplishments"
-                  onChange={(e) => {
-                    console.log(`Changing accomplishment ${item.id} to:`, e.target.value);
-                    const updatedItems = accomplishmentsWithIds.map(accItem => 
-                      accItem.id === item.id 
-                        ? { ...accItem, text: e.target.value } 
-                        : accItem
-                    );
-                    setAccomplishmentsWithIds(updatedItems);
-                    setValue(
-                      "delivery_performance.accomplishments", 
-                      updatedItems.map(i => i.text),
-                      { shouldValidate: true, shouldDirty: true }
-                    );
-                  }}
-                  onValueChange={(value) => {
-                    console.log(`AI changed accomplishment ${item.id} to:`, value);
-                    const updatedItems = accomplishmentsWithIds.map(accItem => 
-                      accItem.id === item.id 
-                        ? { ...accItem, text: value } 
-                        : accItem
-                    );
-                    setAccomplishmentsWithIds(updatedItems);
-                    setValue(
-                      "delivery_performance.accomplishments", 
-                      updatedItems.map(i => i.text),
-                      { shouldValidate: true, shouldDirty: true }
-                    );
-                  }}
-                />
-              </div>
+            <div key={item.id} className="grid grid-cols-[1fr,auto] gap-2 mt-2">
+              <TextareaWithAI
+                placeholder="Completed feature X ahead of schedule"
+                value={item.text}
+                aiContext="accomplishments"
+                className="min-h-[100px] w-full"
+                onChange={(e) => {
+                  console.log(`Changing accomplishment ${item.id} to:`, e.target.value);
+                  const updatedItems = accomplishmentsWithIds.map(accItem => 
+                    accItem.id === item.id 
+                      ? { ...accItem, text: e.target.value } 
+                      : accItem
+                  );
+                  setAccomplishmentsWithIds(updatedItems);
+                  setValue(
+                    "delivery_performance.accomplishments", 
+                    updatedItems.map(i => i.text),
+                    { shouldValidate: true, shouldDirty: true, shouldTouch: true }
+                  );
+                }}
+                onValueChange={(value) => {
+                  console.log(`AI changed accomplishment ${item.id} to:`, value);
+                  const updatedItems = accomplishmentsWithIds.map(accItem => 
+                    accItem.id === item.id 
+                      ? { ...accItem, text: value } 
+                      : accItem
+                  );
+                  setAccomplishmentsWithIds(updatedItems);
+                  setValue(
+                    "delivery_performance.accomplishments", 
+                    updatedItems.map(i => i.text),
+                    { shouldValidate: true, shouldDirty: true, shouldTouch: true }
+                  );
+                }}
+              />
               <Button 
                 type="button" 
                 variant="ghost" 
-                size="icon" 
+                size="icon"
+                className="mt-1" 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -223,46 +224,46 @@ export default function DeliveryPerformanceSection({ form }: DeliveryPerformance
         <div>
           <Label>Misses & Delays (optional)</Label>
           {missesDelaysWithIds.map((item) => (
-            <div key={item.id} className="flex items-center gap-2 mt-2 w-full">
-              <div className="flex-grow">
-                <InputWithAI
-                  placeholder="API integration delayed due to vendor issues"
-                  value={item.text}
-                  aiContext="misses_delays"
-                  onChange={(e) => {
-                    console.log(`Changing miss/delay ${item.id} to:`, e.target.value);
-                    const updatedItems = missesDelaysWithIds.map(missItem => 
-                      missItem.id === item.id 
-                        ? { ...missItem, text: e.target.value } 
-                        : missItem
-                    );
-                    setMissesDelaysWithIds(updatedItems);
-                    setValue(
-                      "delivery_performance.misses_delays", 
-                      updatedItems.map(i => i.text),
-                      { shouldValidate: true, shouldDirty: true }
-                    );
-                  }}
-                  onValueChange={(value) => {
-                    console.log(`AI changed miss/delay ${item.id} to:`, value);
-                    const updatedItems = missesDelaysWithIds.map(missItem => 
-                      missItem.id === item.id 
-                        ? { ...missItem, text: value } 
-                        : missItem
-                    );
-                    setMissesDelaysWithIds(updatedItems);
-                    setValue(
-                      "delivery_performance.misses_delays", 
-                      updatedItems.map(i => i.text),
-                      { shouldValidate: true, shouldDirty: true }
-                    );
-                  }}
-                />
-              </div>
+            <div key={item.id} className="grid grid-cols-[1fr,auto] gap-2 mt-2">
+              <TextareaWithAI
+                placeholder="API integration delayed due to vendor issues"
+                value={item.text}
+                aiContext="misses_delays"
+                className="min-h-[100px] w-full"
+                onChange={(e) => {
+                  console.log(`Changing miss/delay ${item.id} to:`, e.target.value);
+                  const updatedItems = missesDelaysWithIds.map(missItem => 
+                    missItem.id === item.id 
+                      ? { ...missItem, text: e.target.value } 
+                      : missItem
+                  );
+                  setMissesDelaysWithIds(updatedItems);
+                  setValue(
+                    "delivery_performance.misses_delays", 
+                    updatedItems.map(i => i.text),
+                    { shouldValidate: true, shouldDirty: true, shouldTouch: true }
+                  );
+                }}
+                onValueChange={(value) => {
+                  console.log(`AI changed miss/delay ${item.id} to:`, value);
+                  const updatedItems = missesDelaysWithIds.map(missItem => 
+                    missItem.id === item.id 
+                      ? { ...missItem, text: value } 
+                      : missItem
+                  );
+                  setMissesDelaysWithIds(updatedItems);
+                  setValue(
+                    "delivery_performance.misses_delays", 
+                    updatedItems.map(i => i.text),
+                    { shouldValidate: true, shouldDirty: true, shouldTouch: true }
+                  );
+                }}
+              />
               <Button 
                 type="button" 
                 variant="ghost" 
-                size="icon" 
+                size="icon"
+                className="mt-1" 
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
