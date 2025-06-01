@@ -98,7 +98,6 @@ CREATE TABLE delivery_misses_delays (
 CREATE TABLE stakeholder_engagement (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     update_id UUID NOT NULL REFERENCES weekly_updates(id) ON DELETE CASCADE,
-    stakeholder_nps DECIMAL(3,1),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -112,14 +111,6 @@ CREATE TABLE stakeholder_feedback (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Stakeholder expectation shifts table
-CREATE TABLE stakeholder_expectations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    engagement_id UUID NOT NULL REFERENCES stakeholder_engagement(id) ON DELETE CASCADE,
-    expectation TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Risks and escalations table
 CREATE TABLE risks_escalations (
@@ -301,7 +292,6 @@ CREATE TRIGGER update_delivery_accomplishments_timestamp BEFORE UPDATE ON delive
 CREATE TRIGGER update_delivery_misses_delays_timestamp BEFORE UPDATE ON delivery_misses_delays FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_stakeholder_engagement_timestamp BEFORE UPDATE ON stakeholder_engagement FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_stakeholder_feedback_timestamp BEFORE UPDATE ON stakeholder_feedback FOR EACH ROW EXECUTE FUNCTION update_timestamp();
-CREATE TRIGGER update_stakeholder_expectations_timestamp BEFORE UPDATE ON stakeholder_expectations FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_risks_escalations_timestamp BEFORE UPDATE ON risks_escalations FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_risks_timestamp BEFORE UPDATE ON risks FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER update_escalations_timestamp BEFORE UPDATE ON escalations FOR EACH ROW EXECUTE FUNCTION update_timestamp();

@@ -145,9 +145,7 @@ function getDefaultDataStructure(): UpdateData {
       misses_delays: ['']
     },
     stakeholder_engagement: {
-      stakeholder_nps: null,
-      feedback_notes: [''],
-      expectation_shift: ['']
+      feedback_notes: ['']
     },
     risks_escalations: {
       risks: [{ title: '', description: '', severity: 'Green' }],
@@ -315,10 +313,9 @@ export async function getUpdateById(updateId: string): Promise<any> {
     let stakeholderEngId = null;
     if (stakeholderEngResult.rows.length > 0) {
       stakeholderEngId = stakeholderEngResult.rows[0].id;
-      data.stakeholder_engagement.stakeholder_nps = stakeholderEngResult.rows[0].stakeholder_nps;
     }
     
-    // If we found stakeholder engagement, load feedback and expectations
+    // If we found stakeholder engagement, load feedback
     if (stakeholderEngId) {
       // Load feedback
       const feedbackResult = await query(`
@@ -329,17 +326,6 @@ export async function getUpdateById(updateId: string): Promise<any> {
       
       if (feedbackResult.rows.length > 0) {
         data.stakeholder_engagement.feedback_notes = feedbackResult.rows.map(row => row.feedback);
-      }
-      
-      // Load expectations
-      const expectationsResult = await query(`
-        SELECT * FROM stakeholder_expectations 
-        WHERE engagement_id = $1
-        ORDER BY created_at
-      `, [stakeholderEngId]);
-      
-      if (expectationsResult.rows.length > 0) {
-        data.stakeholder_engagement.expectation_shift = expectationsResult.rows.map(row => row.expectation);
       }
     }
     
@@ -870,26 +856,15 @@ export async function saveUpdate(
       `, [savedUpdate.id]);
       
       if (stakeholderEngResult.rows.length > 0) {
-        // Update existing record
+        // Record already exists
         stakeholderEngId = stakeholderEngResult.rows[0].id;
-        await query(`
-          UPDATE stakeholder_engagement
-          SET stakeholder_nps = $1
-          WHERE id = $2
-        `, [
-          stakeholderEng.stakeholder_nps !== null ? stakeholderEng.stakeholder_nps : null,
-          stakeholderEngId
-        ]);
       } else {
         // Create new record
         const newStakeholderEngResult = await query(`
-          INSERT INTO stakeholder_engagement (update_id, stakeholder_nps)
-          VALUES ($1, $2)
+          INSERT INTO stakeholder_engagement (update_id)
+          VALUES ($1)
           RETURNING id
-        `, [
-          savedUpdate.id,
-          stakeholderEng.stakeholder_nps !== null ? stakeholderEng.stakeholder_nps : null
-        ]);
+        `, [savedUpdate.id]);
         stakeholderEngId = newStakeholderEngResult.rows[0].id;
       }
       
@@ -904,23 +879,6 @@ export async function saveUpdate(
           if (item && item.trim() !== '') {
             await query(`
               INSERT INTO stakeholder_feedback (engagement_id, feedback)
-              VALUES ($1, $2)
-            `, [stakeholderEngId, item]);
-          }
-        }
-      }
-      
-      // Handle expectation shifts - First delete existing ones
-      await query(`
-        DELETE FROM stakeholder_expectations WHERE engagement_id = $1
-      `, [stakeholderEngId]);
-      
-      // Then insert new ones
-      if (Array.isArray(stakeholderEng.expectation_shift)) {
-        for (const item of stakeholderEng.expectation_shift) {
-          if (item && item.trim() !== '') {
-            await query(`
-              INSERT INTO stakeholder_expectations (engagement_id, expectation)
               VALUES ($1, $2)
             `, [stakeholderEngId, item]);
           }

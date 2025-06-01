@@ -27,7 +27,6 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
   const filteredAccomplishments = delivery_performance?.accomplishments?.filter((item) => item?.trim() !== "") || []
   const filteredMissesDelays = delivery_performance?.misses_delays?.filter((item) => item?.trim() !== "") || []
   const filteredFeedbackNotes = stakeholder_engagement?.feedback_notes?.filter((item) => item?.trim() !== "") || []
-  const filteredExpectationShift = stakeholder_engagement?.expectation_shift?.filter((item) => item?.trim() !== "") || []
   const filteredRisks = risks_escalations?.risks?.filter((risk) => risk?.title?.trim() !== "") || []
   const filteredEscalations = risks_escalations?.escalations?.filter((item) => item?.trim() !== "") || []
   const filteredWins = opportunities_wins?.wins?.filter((item) => item?.trim() !== "") || []
@@ -156,51 +155,20 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
       )}
 
       {/* Stakeholder Engagement */}
-      {(filteredFeedbackNotes.length > 0 || filteredExpectationShift.length > 0) && (
+      {filteredFeedbackNotes.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Stakeholder Engagement</h3>
-            <div className="flex items-center space-x-2">
-              {stakeholder_engagement?.stakeholder_nps !== null && typeof stakeholder_engagement.stakeholder_nps === 'number' && (
-                <Badge variant="outline" className="font-mono">
-                  NPS: {typeof stakeholder_engagement.stakeholder_nps === 'number' ? stakeholder_engagement.stakeholder_nps.toFixed(1) : 'N/A'}
-                </Badge>
-              )}
-              <TrafficLightIndicator
-                value={
-                  stakeholder_engagement?.stakeholder_nps === null || typeof stakeholder_engagement?.stakeholder_nps !== 'number'
-                    ? "Green"
-                    : typeof stakeholder_engagement.stakeholder_nps === 'number' && stakeholder_engagement.stakeholder_nps < 3
-                      ? "Red"
-                      : typeof stakeholder_engagement.stakeholder_nps === 'number' && stakeholder_engagement.stakeholder_nps < 4
-                        ? "Yellow"
-                        : "Green"
-                }
-              />
-            </div>
           </div>
 
-          {filteredFeedbackNotes.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium">Feedback Notes</h4>
-              <ul className="list-disc pl-5 space-y-1">
-                {filteredFeedbackNotes.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {filteredExpectationShift.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium">Expectation Shifts</h4>
-              <ul className="list-disc pl-5 space-y-1">
-                {filteredExpectationShift.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div>
+            <h4 className="text-sm font-medium">Feedback Notes</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {filteredFeedbackNotes.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 

@@ -50,8 +50,6 @@ export interface WeeklyUpdateFormData {
   // Stakeholder Engagement
   stakeholder_engagement: {
     feedback_notes: string[]
-    expectation_shift: string[]
-    stakeholder_nps: number | null
   }
 
   // Risks & Escalations
@@ -190,8 +188,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
     },
     stakeholder_engagement: {
       feedback_notes: [""],
-      expectation_shift: [""],
-      stakeholder_nps: null,
     },
     risks_escalations: {
       risks: [{ title: "", description: "", severity: "Green" }],
@@ -527,9 +523,7 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               form.setValue("delivery_performance.misses_delays", completeData.delivery_performance.misses_delays || [""]);
               
               // Set stakeholder_engagement fields
-              form.setValue("stakeholder_engagement.stakeholder_nps", completeData.stakeholder_engagement.stakeholder_nps);
               form.setValue("stakeholder_engagement.feedback_notes", completeData.stakeholder_engagement.feedback_notes || [""]);
-              form.setValue("stakeholder_engagement.expectation_shift", completeData.stakeholder_engagement.expectation_shift || [""]);
               
               // Set risks_escalations fields
               form.setValue("risks_escalations.risks", completeData.risks_escalations.risks || [{ title: "", description: "", severity: "Green" }]);
