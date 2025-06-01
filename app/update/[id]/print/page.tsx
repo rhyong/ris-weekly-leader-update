@@ -8,6 +8,29 @@ import ReportPreview from "@/components/report-preview"
 import type { WeeklyUpdateFormData } from "@/components/weekly-update-form"
 import { useAuth } from "@/lib/auth-context"
 
+// Add print-specific styles
+const printStyles = `
+  @media print {
+    header, nav, .navigation, [class*="navigation"], [class*="header"] {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      position: absolute !important;
+      top: -9999px !important;
+      left: -9999px !important;
+    }
+    body {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .print-view {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+  }
+`
+
 export default function UpdatePrintPage() {
   const params = useParams()
   const router = useRouter()
@@ -15,6 +38,22 @@ export default function UpdatePrintPage() {
   const [update, setUpdate] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Effect to hide the navigation header
+  useEffect(() => {
+    // Use JavaScript to hide the navigation header
+    const header = document.querySelector('header');
+    if (header) {
+      header.style.display = 'none';
+    }
+    
+    // Add a class to the body for print-specific styles
+    document.body.classList.add('print-page');
+    
+    return () => {
+      document.body.classList.remove('print-page');
+    };
+  }, []);
 
   useEffect(() => {
     const fetchUpdate = async () => {
@@ -53,7 +92,10 @@ export default function UpdatePrintPage() {
   }
 
   return (
-    <div className="py-6 px-4 min-h-screen flex flex-col items-center bg-white print:p-0">
+    <>
+      {/* Inject print styles */}
+      <style dangerouslySetInnerHTML={{ __html: printStyles }} />
+      <div className="py-6 px-4 min-h-screen flex flex-col items-center bg-white print:p-0 print-view">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md mb-6 w-full max-w-4xl print:hidden">
           <p className="font-medium">Error</p>
@@ -101,6 +143,7 @@ export default function UpdatePrintPage() {
           </Button>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

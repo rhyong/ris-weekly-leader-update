@@ -1,0 +1,49 @@
+/* Print styles to hide navigation and headers */
+@media print {
+  header, 
+  nav, 
+  .navigation, 
+  [class*="navigation"], 
+  [class*="header"],
+  .header,
+  .sticky {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-view {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+}
+
+/* Non-print styles for the print view */
+.print-layout header,
+.print-layout nav,
+.print-layout .navigation,
+body.print-page header,
+body.print-page nav,
+body.print-page .navigation {
+  display: none !important;
+}
+
+/* Hide header on print view page even without printing */
+.sticky.top-0.z-50.w-full.border-b.bg-background\/95.backdrop-blur.supports-\[backdrop-filter\]\:bg-background\/60 {
+  display: none !important;
+}
