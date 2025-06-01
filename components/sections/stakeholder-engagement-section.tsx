@@ -4,9 +4,9 @@ import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData, TrafficLight } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
+import InputWithAI from "../ui/input-with-ai"
 
 interface StakeholderEngagementSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
@@ -35,15 +35,23 @@ export default function StakeholderEngagementSection({ form }: StakeholderEngage
           <Label>Feedback Notes</Label>
           {feedbackNotes.map((item, index) => (
             <div key={`feedback-${index}`} className="flex items-center gap-2 mt-2">
-              <Input
-                placeholder="Client praised incident handling"
-                value={item}
-                onChange={(e) => {
-                  const updated = [...feedbackNotes]
-                  updated[index] = e.target.value
-                  setValue("stakeholder_engagement.feedback_notes", updated)
-                }}
-              />
+              <div className="flex-grow">
+                <InputWithAI
+                  placeholder="Client praised incident handling"
+                  value={item}
+                  aiContext="stakeholder_feedback"
+                  onChange={(e) => {
+                    const updated = [...feedbackNotes]
+                    updated[index] = e.target.value
+                    setValue("stakeholder_engagement.feedback_notes", updated)
+                  }}
+                  onValueChange={(value) => {
+                    const updated = [...feedbackNotes]
+                    updated[index] = value
+                    setValue("stakeholder_engagement.feedback_notes", updated)
+                  }}
+                />
+              </div>
               <Button type="button" variant="ghost" size="icon" onClick={() => removeFeedbackNote(index)}>
                 <Trash2 className="h-4 w-4" />
               </Button>
