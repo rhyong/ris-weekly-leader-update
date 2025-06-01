@@ -165,11 +165,12 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
           <div>
             <Label>What went well this week? Any personal or professional wins to share?</Label>
             {winsWithIds.map((item) => (
-              <div key={item.id} className="flex items-center gap-2 mt-2">
-                <InputWithAI
+              <div key={item.id} className="grid grid-cols-[1fr,auto] gap-2 mt-2">
+                <TextareaWithAI
                   placeholder="Successfully led a cross-functional meeting"
                   value={item.text}
                   aiContext="personal_wins"
+                  className="min-h-[100px] w-full"
                   onChange={(e) => {
                     const updated = winsWithIds.map(win => 
                       win.id === item.id ? { ...win, text: e.target.value } : win
@@ -199,7 +200,7 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
                     });
                   }}
                 />
-                <Button type="button" variant="ghost" size="icon" onClick={() => removePersonalWin(item.id)}>
+                <Button type="button" variant="ghost" size="icon" className="mt-1" onClick={() => removePersonalWin(item.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
