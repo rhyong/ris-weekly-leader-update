@@ -987,21 +987,38 @@ export async function saveUpdate(
         personalUpdatesId = newPersonalUpdatesResult.rows[0].id;
       }
       
+      // Debug personal wins before saving
+      console.log("Processing personal wins:", {
+        personalWinsArray: Array.isArray(personalUpdates.personal_wins),
+        personalWinsLength: personalUpdates.personal_wins?.length || 0,
+        personalWins: personalUpdates.personal_wins || "none",
+      });
+      
       // Handle personal wins - First delete existing ones
       await query(`
         DELETE FROM personal_wins WHERE personal_update_id = $1
       `, [personalUpdatesId]);
       
+      console.log("Deleted existing personal wins for personal_update_id:", personalUpdatesId);
+      
       // Then insert new ones
       if (Array.isArray(personalUpdates.personal_wins)) {
+        console.log(`Found ${personalUpdates.personal_wins.length} personal wins to save`);
+        
         for (const item of personalUpdates.personal_wins) {
+          console.log("Processing personal win item:", { item, isEmpty: !item || item.trim() === '' });
+          
           if (item && item.trim() !== '') {
             await query(`
               INSERT INTO personal_wins (personal_update_id, description)
               VALUES ($1, $2)
             `, [personalUpdatesId, item]);
+            
+            console.log("Inserted personal win:", item);
           }
         }
+      } else {
+        console.log("No personal wins array found to process");
       }
       
       // Handle reflections - First delete existing ones

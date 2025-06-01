@@ -505,11 +505,23 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
               // Set support_needed fields
               form.setValue("support_needed.requests", completeData.support_needed.requests || [""]);
               
+              // Set personal_updates fields
+              form.setValue("personal_updates.personal_wins", completeData.personal_updates.personal_wins || [""]);
+              form.setValue("personal_updates.reflections", completeData.personal_updates.reflections || [""]);
+              form.setValue("personal_updates.goals", completeData.personal_updates.goals || [{ description: "", status: "Green", update: "" }]);
+              form.setValue("personal_updates.support_needed", completeData.personal_updates.support_needed || "");
+              
+              // Set team_members_updates fields
+              form.setValue("team_members_updates.people_changes", completeData.team_members_updates.people_changes || "");
+              form.setValue("team_members_updates.top_contributors", completeData.team_members_updates.top_contributors || [{ name: "", achievement: "", recognition: "" }]);
+              form.setValue("team_members_updates.members_needing_attention", completeData.team_members_updates.members_needing_attention || [{ name: "", issue: "", support_plan: "", delivery_risk: "Low" }]);
+              
               // Give time for these values to propagate
               setTimeout(() => {
                 console.log("Verify values were set correctly:");
                 console.log("top_3_bullets:", form.getValues("top_3_bullets"));
                 console.log("team_health.overall_status:", form.getValues("team_health.overall_status"));
+                console.log("personal_updates.personal_wins:", form.getValues("personal_updates.personal_wins"));
               }, 200);
             } else {
               console.warn("Update data missing or invalid format:", updateData);
@@ -563,6 +575,14 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       date: data.meta.date,
       teamName: data.meta.team_name,
       clientOrg: data.meta.client_org
+    });
+    
+    // Debug personal_wins data
+    console.log("Personal wins data:", {
+      personal_wins: data.personal_updates.personal_wins,
+      hasPersonalWins: Boolean(data.personal_updates.personal_wins),
+      personalWinsLength: data.personal_updates.personal_wins?.length || 0,
+      personalWinsContent: data.personal_updates.personal_wins ? JSON.stringify(data.personal_updates.personal_wins) : 'none'
     });
     
     setFormData(data);

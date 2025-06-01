@@ -75,11 +75,11 @@ export default function TextareaWithAI({
   console.log(`TextareaWithAI (${props.id || 'unnamed'}) rendering with value:`, localValue);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Textarea
         value={localValue}
         onChange={handleChange}
-        className={`pr-10 ${className || ""}`}
+        className={`pr-10 w-full ${className || ""}`}
         {...props}
       />
       <div className="absolute top-1 right-1">

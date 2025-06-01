@@ -1,4 +1,5 @@
 "use client"
+import { useState, useEffect } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { WeeklyUpdateFormData, TrafficLight } from "../weekly-update-form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,31 +17,119 @@ interface PersonalUpdatesSectionProps {
   form: UseFormReturn<WeeklyUpdateFormData>
 }
 
+interface WinItem {
+  id: string;
+  text: string;
+}
+
 export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionProps) {
   const { register, watch, setValue } = form
   const personalWins = watch("personal_updates.personal_wins")
   const reflections = watch("personal_updates.reflections")
   const goals = watch("personal_updates.goals")
   const supportNeeded = watch("personal_updates.support_needed")
+  
+  // Convert array of strings to array of objects with stable IDs
+  const [winsWithIds, setWinsWithIds] = useState<WinItem[]>(() => {
+    return Array.isArray(personalWins) 
+      ? personalWins.map((text, i) => ({ id: `win-${Date.now()}-${i}`, text }))
+      : [{ id: `win-${Date.now()}`, text: '' }];
+  });
+  
+  // Sync when personalWins change externally (like form load)
+  useEffect(() => {
+    if (Array.isArray(personalWins)) {
+      // Only update if the content is different to avoid loops
+      const winTexts = winsWithIds.map(item => item.text);
+      const hasChanges = personalWins.length !== winTexts.length || 
+        personalWins.some((text, i) => text !== winTexts[i]);
+      
+      if (hasChanges) {
+        setWinsWithIds(personalWins.map((text, i) => ({ id: `win-${Date.now()}-${i}`, text })));
+      }
+    }
+  }, [personalWins]);
 
   // Personal Wins
   const addPersonalWin = () => {
-    setValue("personal_updates.personal_wins", [...personalWins, ""])
+    const newWinsWithIds = [...winsWithIds, { id: `win-${Date.now()}`, text: "" }];
+    setWinsWithIds(newWinsWithIds);
+    
+    // Update the form with just the text values
+    const textValues = newWinsWithIds.map(item => item.text);
+    setValue("personal_updates.personal_wins", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
-  const removePersonalWin = (index: number) => {
-    const updated = personalWins.filter((_, i) => i !== index)
-    setValue("personal_updates.personal_wins", updated.length ? updated : [""])
+  const removePersonalWin = (idToRemove: string) => {
+    const updatedItems = winsWithIds.filter(item => item.id !== idToRemove);
+    const finalItems = updatedItems.length ? updatedItems : [{ id: `win-${Date.now()}`, text: '' }];
+    setWinsWithIds(finalItems);
+    
+    // Update the form with just the text values
+    const textValues = finalItems.map(item => item.text);
+    setValue("personal_updates.personal_wins", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
+  interface ReflectionItem {
+    id: string;
+    text: string;
+  }
+  
+  // Convert reflections array to objects with stable IDs
+  const [reflectionsWithIds, setReflectionsWithIds] = useState<ReflectionItem[]>(() => {
+    return Array.isArray(reflections) 
+      ? reflections.map((text, i) => ({ id: `reflection-${Date.now()}-${i}`, text }))
+      : [{ id: `reflection-${Date.now()}`, text: '' }];
+  });
+  
+  // Sync when reflections change externally (like form load)
+  useEffect(() => {
+    if (Array.isArray(reflections)) {
+      // Only update if the content is different to avoid loops
+      const reflectionTexts = reflectionsWithIds.map(item => item.text);
+      const hasChanges = reflections.length !== reflectionTexts.length || 
+        reflections.some((text, i) => text !== reflectionTexts[i]);
+      
+      if (hasChanges) {
+        setReflectionsWithIds(reflections.map((text, i) => ({ id: `reflection-${Date.now()}-${i}`, text })));
+      }
+    }
+  }, [reflections]);
+  
   // Reflections
   const addReflection = () => {
-    setValue("personal_updates.reflections", [...reflections, ""])
+    const newReflectionsWithIds = [...reflectionsWithIds, { id: `reflection-${Date.now()}`, text: "" }];
+    setReflectionsWithIds(newReflectionsWithIds);
+    
+    // Update the form with just the text values
+    const textValues = newReflectionsWithIds.map(item => item.text);
+    setValue("personal_updates.reflections", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
-  const removeReflection = (index: number) => {
-    const updated = reflections.filter((_, i) => i !== index)
-    setValue("personal_updates.reflections", updated.length ? updated : [""])
+  const removeReflection = (idToRemove: string) => {
+    const updatedItems = reflectionsWithIds.filter(item => item.id !== idToRemove);
+    const finalItems = updatedItems.length ? updatedItems : [{ id: `reflection-${Date.now()}`, text: '' }];
+    setReflectionsWithIds(finalItems);
+    
+    // Update the form with just the text values
+    const textValues = finalItems.map(item => item.text);
+    setValue("personal_updates.reflections", textValues, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    });
   }
 
   // Goals
@@ -75,24 +164,42 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
         <CardContent className="space-y-4">
           <div>
             <Label>What went well this week? Any personal or professional wins to share?</Label>
-            {personalWins.map((item, index) => (
-              <div key={`win-${index}`} className="flex items-center gap-2 mt-2">
+            {winsWithIds.map((item) => (
+              <div key={item.id} className="flex items-center gap-2 mt-2">
                 <InputWithAI
                   placeholder="Successfully led a cross-functional meeting"
-                  value={item}
+                  value={item.text}
                   aiContext="personal_wins"
                   onChange={(e) => {
-                    const updated = [...personalWins]
-                    updated[index] = e.target.value
-                    setValue("personal_updates.personal_wins", updated)
+                    const updated = winsWithIds.map(win => 
+                      win.id === item.id ? { ...win, text: e.target.value } : win
+                    );
+                    setWinsWithIds(updated);
+                    
+                    // Update the form with just the text values
+                    const textValues = updated.map(win => win.text);
+                    setValue("personal_updates.personal_wins", textValues, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true
+                    });
                   }}
                   onValueChange={(value) => {
-                    const updated = [...personalWins]
-                    updated[index] = value
-                    setValue("personal_updates.personal_wins", updated)
+                    const updated = winsWithIds.map(win => 
+                      win.id === item.id ? { ...win, text: value } : win
+                    );
+                    setWinsWithIds(updated);
+                    
+                    // Update the form with just the text values
+                    const textValues = updated.map(win => win.text);
+                    setValue("personal_updates.personal_wins", textValues, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true
+                    });
                   }}
                 />
-                <Button type="button" variant="ghost" size="icon" onClick={() => removePersonalWin(index)}>
+                <Button type="button" variant="ghost" size="icon" onClick={() => removePersonalWin(item.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -112,24 +219,43 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
         <CardContent className="space-y-4">
           <div>
             <Label>What did you learn this week? Any mindset shifts or challenges you encountered?</Label>
-            {reflections.map((item, index) => (
-              <div key={`reflection-${index}`} className="flex items-center gap-2 mt-2">
-                <InputWithAI
+            {reflectionsWithIds.map((item) => (
+              <div key={item.id} className="grid grid-cols-[1fr,auto] gap-2 mt-2">
+                <TextareaWithAI
                   placeholder="Learned the importance of setting clear expectations"
-                  value={item}
+                  value={item.text}
                   aiContext="reflections"
+                  className="min-h-[100px] w-full"
                   onChange={(e) => {
-                    const updated = [...reflections]
-                    updated[index] = e.target.value
-                    setValue("personal_updates.reflections", updated)
+                    const updated = reflectionsWithIds.map(reflection => 
+                      reflection.id === item.id ? { ...reflection, text: e.target.value } : reflection
+                    );
+                    setReflectionsWithIds(updated);
+                    
+                    // Update the form with just the text values
+                    const textValues = updated.map(reflection => reflection.text);
+                    setValue("personal_updates.reflections", textValues, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true
+                    });
                   }}
                   onValueChange={(value) => {
-                    const updated = [...reflections]
-                    updated[index] = value
-                    setValue("personal_updates.reflections", updated)
+                    const updated = reflectionsWithIds.map(reflection => 
+                      reflection.id === item.id ? { ...reflection, text: value } : reflection
+                    );
+                    setReflectionsWithIds(updated);
+                    
+                    // Update the form with just the text values
+                    const textValues = updated.map(reflection => reflection.text);
+                    setValue("personal_updates.reflections", textValues, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true
+                    });
                   }}
                 />
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeReflection(index)}>
+                <Button type="button" variant="ghost" size="icon" className="mt-1" onClick={() => removeReflection(item.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

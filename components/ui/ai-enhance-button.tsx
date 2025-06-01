@@ -24,9 +24,16 @@ export default function AIEnhanceButton({
 
   const handleEnhance = async () => {
     if (disabled || isLoading || !text || text.trim().length < 3) {
+      console.log("AI enhance button clicked but disabled:", { 
+        isDisabled: disabled, 
+        isLoading, 
+        textLength: text?.length || 0,
+        textContent: text
+      });
       return
     }
 
+    console.log("AI enhance button clicked for context:", context, "with text:", text);
     setIsLoading(true)
 
     try {
@@ -39,18 +46,22 @@ export default function AIEnhanceButton({
       })
 
       const data = await response.json()
+      console.log("AI enhancement API response:", data);
 
       if (!response.ok) {
+        console.error("API error:", data.error);
         throw new Error(data.error || 'Failed to enhance text')
       }
 
       if (data.enhanced) {
+        console.log("Enhanced text received:", data.enhancedText);
         onEnhancedText(data.enhancedText)
         toast({
           title: 'Text enhanced',
           description: 'AI has improved your text.',
         })
       } else {
+        console.log("No enhancement available:", data.message);
         toast({
           title: 'Text not enhanced',
           description: data.message || 'No enhancement was possible.',
