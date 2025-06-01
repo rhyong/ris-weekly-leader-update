@@ -143,7 +143,7 @@ export default function LoginPage() {
               />
             </div>
             
-            <input type="hidden" name="redirectTo" value="/diagnostics" />
+            <input type="hidden" name="redirectTo" value="/" />
             
             {isLoading && (
               <div className="flex items-center justify-center py-2">
