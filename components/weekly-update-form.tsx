@@ -371,37 +371,6 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
     };
   }
   
-  // Helper function to ensure all fields are populated correctly
-  function ensureAllFieldsPopulated(data: WeeklyUpdateFormData): WeeklyUpdateFormData {
-    // Create a clean copy to avoid reference issues
-    const cleanData = {...data};
-    
-    // Log what we're working with
-    console.log("Ensuring all fields are populated. Initial data:", {
-      hasTop3Bullets: Boolean(cleanData.top_3_bullets),
-      hasTeamHealth: Boolean(cleanData.team_health),
-      hasTeamHealthOverallStatus: Boolean(cleanData.team_health?.overall_status)
-    });
-    
-    // Ensure team_health and its properties exist
-    if (!cleanData.team_health) {
-      cleanData.team_health = {
-        owner_input: "",
-        sentiment_score: 3.5,
-        overall_status: ""
-      };
-    } else {
-      // Ensure all team_health fields exist
-      cleanData.team_health.owner_input = cleanData.team_health.owner_input || "";
-      cleanData.team_health.sentiment_score = cleanData.team_health.sentiment_score || 3.5;
-      cleanData.team_health.overall_status = cleanData.team_health.overall_status || "";
-    }
-    
-    // Ensure top_3_bullets exists
-    cleanData.top_3_bullets = cleanData.top_3_bullets || "";
-    
-    return cleanData;
-  }
 
   // Separate effect to load existing update data
   useEffect(() => {

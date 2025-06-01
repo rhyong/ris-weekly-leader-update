@@ -1,5 +1,4 @@
 import { query, beginTransaction, commitTransaction, rollbackTransaction } from "./db";
-import { randomUUID } from "crypto";
 
 // Types for weekly updates
 export interface WeeklyUpdate {
@@ -25,102 +24,6 @@ export interface WeeklyUpdateListItem {
 
 export interface UpdateData {
   [key: string]: any;
-}
-
-/**
- * Helper function to save an array of simple items to a child table
- */
-async function saveArrayItems(
-  parentId: string,
-  parentIdField: string,
-  tableName: string, 
-  items: string[],
-  descriptionField: string = 'description'
-): Promise<void> {
-  // First delete existing items
-  await query(`DELETE FROM ${tableName} WHERE ${parentIdField} = $1`, [parentId]);
-  
-  // Then insert new non-empty items
-  if (Array.isArray(items)) {
-    for (const item of items) {
-      if (item && item.trim() !== '') {
-        await query(`
-          INSERT INTO ${tableName} (${parentIdField}, ${descriptionField})
-          VALUES ($1, $2)
-        `, [parentId, item]);
-      }
-    }
-  }
-}
-
-/**
- * Helper function to load an array of simple items from a child table
- */
-async function loadArrayItems(
-  parentId: string,
-  parentIdField: string,
-  tableName: string,
-  descriptionField: string = 'description'
-): Promise<string[]> {
-  const result = await query(`
-    SELECT * FROM ${tableName} 
-    WHERE ${parentIdField} = $1
-    ORDER BY created_at
-  `, [parentId]);
-  
-  if (result.rows.length > 0) {
-    return result.rows.map(row => row[descriptionField]);
-  }
-  
-  return [''];
-}
-
-/**
- * Helper function to find or create a parent record
- */
-async function findOrCreateParentRecord(
-  tableName: string,
-  updateId: string,
-  additionalFields: { [key: string]: any } = {}
-): Promise<string> {
-  // Check if a record already exists
-  const existingResult = await query(`
-    SELECT id FROM ${tableName} WHERE update_id = $1
-  `, [updateId]);
-  
-  if (existingResult.rows.length > 0) {
-    const recordId = existingResult.rows[0].id;
-    
-    // If there are additional fields to update
-    if (Object.keys(additionalFields).length > 0) {
-      const updateFields = Object.keys(additionalFields)
-        .map((key, index) => `${key} = $${index + 2}`)
-        .join(', ');
-      
-      const updateValues = [recordId, ...Object.values(additionalFields)];
-      
-      await query(`
-        UPDATE ${tableName}
-        SET ${updateFields}
-        WHERE id = $1
-      `, updateValues);
-    }
-    
-    return recordId;
-  } else {
-    // Create a new record
-    const fields = ['update_id', ...Object.keys(additionalFields)];
-    const placeholders = fields.map((_, index) => `$${index + 1}`).join(', ');
-    const values = [updateId, ...Object.values(additionalFields)];
-    
-    const newResult = await query(`
-      INSERT INTO ${tableName} (${fields.join(', ')})
-      VALUES (${placeholders})
-      RETURNING id
-    `, values);
-    
-    return newResult.rows[0].id;
-  }
 }
 
 /**
