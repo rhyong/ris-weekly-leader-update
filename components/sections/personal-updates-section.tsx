@@ -339,11 +339,11 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
             ))}
           </div>
           <div className="mt-2">
-            <Button type="button" variant="outline" size="sm" onClick={addGoal} disabled={goals.length >= 3}>
-              <Plus className="h-4 w-4 mr-2" /> Add Goal (Max 3)
+            <Button type="button" variant="outline" size="sm" onClick={addGoal}>
+              <Plus className="h-4 w-4 mr-2" /> Add Goal
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">Please list 1–3 goals and update their status.</p>
+          <p className="text-xs text-muted-foreground mt-2">Add goals and track their progress over time.</p>
         </CardContent>
       </Card>
 
