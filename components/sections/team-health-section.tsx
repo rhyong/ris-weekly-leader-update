@@ -114,7 +114,15 @@ export default function TeamHealthSection({ form }: TeamHealthSectionProps) {
             min={1}
             max={5}
             step={0.1}
-            onValueChange={(value) => setValue("team_health.sentiment_score", value[0])}
+            onValueChange={(value) => {
+              console.log(`Setting sentiment score to: ${value[0]}`);
+              setValue("team_health.sentiment_score", value[0]);
+              // Check after setting to verify it was set correctly
+              setTimeout(() => {
+                const currentValue = form.getValues("team_health.sentiment_score");
+                console.log(`Verified sentiment score is now: ${currentValue}`);
+              }, 100);
+            }}
             className="mt-2"
           />
           <SentimentBar value={sentimentScore} className="mt-2" />

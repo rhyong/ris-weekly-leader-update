@@ -161,9 +161,27 @@ export async function getUpdateById(updateId: string): Promise<any> {
       // Log raw team health data from database
       console.log("Raw team health data from DB:", JSON.stringify(teamHealth, null, 2));
       
+      // Ensure sentiment_score is properly handled
+      let sentimentScore = 3.5; // Default fallback
+      if (typeof teamHealth.sentiment_score === 'number') {
+        sentimentScore = teamHealth.sentiment_score;
+      } else if (teamHealth.sentiment_score !== null && teamHealth.sentiment_score !== undefined) {
+        // Try to parse it as a number
+        const parsedScore = parseFloat(String(teamHealth.sentiment_score));
+        if (!isNaN(parsedScore)) {
+          sentimentScore = parsedScore;
+        }
+      }
+      
+      console.log("Sentiment score from DB:", {
+        original: teamHealth.sentiment_score,
+        originalType: typeof teamHealth.sentiment_score,
+        parsed: sentimentScore
+      });
+      
       data.team_health = {
         owner_input: teamHealth.owner_input || '',
-        sentiment_score: teamHealth.sentiment_score || 3.5,
+        sentiment_score: sentimentScore, // Use the processed value
         overall_status: teamHealth.overall_status || ''
       };
       
@@ -652,30 +670,61 @@ export async function saveUpdate(
       // Log team health data for debugging
       console.log("Saving team health data:", JSON.stringify(teamHealth, null, 2));
       
+      // Ensure sentiment score is never NULL - use fallback value if not available
+      // Using typeof check to ensure 0 is treated as a valid number
+      const rawSentimentScore = teamHealth.sentiment_score;
+      const sentimentScore = typeof rawSentimentScore === 'number' 
+        ? rawSentimentScore 
+        : 3.5;
+      
+      console.log(`Sentiment score debug:`, {
+        raw: rawSentimentScore,
+        rawType: typeof rawSentimentScore,
+        processed: sentimentScore,
+        processedType: typeof sentimentScore,
+        isRawNumber: typeof rawSentimentScore === 'number',
+        isString: typeof rawSentimentScore === 'string',
+        parseResult: parseFloat(String(rawSentimentScore))
+      });
+      
       if (teamHealthResult.rows.length > 0) {
+        // Get current value in DB for comparison
+        const currentTeamHealth = await query(`
+          SELECT sentiment_score FROM team_health WHERE update_id = $1
+        `, [savedUpdate.id]);
+        
+        const currentValue = currentTeamHealth.rows[0]?.sentiment_score;
+        console.log(`Current sentiment_score in DB: ${currentValue}, updating to: ${sentimentScore}`);
+        
         // Update existing team_health record
-        await query(`
+        const updateResult = await query(`
           UPDATE team_health 
           SET owner_input = $1, sentiment_score = $2, overall_status = $3
           WHERE update_id = $4
+          RETURNING sentiment_score
         `, [
           teamHealth.owner_input || null,
-          teamHealth.sentiment_score || 3.5,
+          sentimentScore, // Use processed value
           teamHealth.overall_status || null,
           savedUpdate.id
         ]);
+        
+        console.log(`Update result:`, updateResult.rows[0]);
       } else {
         // Create new team_health record
-        await query(`
+        const insertResult = await query(`
           INSERT INTO team_health (
             update_id, owner_input, sentiment_score, overall_status
           ) VALUES ($1, $2, $3, $4)
+          RETURNING sentiment_score
         `, [
           savedUpdate.id,
           teamHealth.owner_input || null,
-          teamHealth.sentiment_score || 3.5,
+          sentimentScore, // Use processed value
           teamHealth.overall_status || null
         ]);
+        
+        console.log(`Insert result:`, insertResult.rows[0]);
       }
     }
     

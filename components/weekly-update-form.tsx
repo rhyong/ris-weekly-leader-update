@@ -577,6 +577,14 @@ export default function WeeklyUpdateForm({ isNewUpdate = false, existingUpdateId
       clientOrg: data.meta.client_org
     });
     
+    // Debug team_health and sentiment_score specifically
+    console.log("Team Health data:", {
+      team_health: data.team_health,
+      sentiment_score: data.team_health?.sentiment_score,
+      sentiment_score_type: typeof data.team_health?.sentiment_score,
+      is_valid_number: !isNaN(Number(data.team_health?.sentiment_score))
+    });
+    
     // Debug personal_wins data
     console.log("Personal wins data:", {
       personal_wins: data.personal_updates.personal_wins,
