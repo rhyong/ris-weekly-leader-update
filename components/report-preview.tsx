@@ -60,8 +60,11 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
         </div>
 
         {top_3_bullets && (
-          <div className="p-3 bg-muted rounded-md">
-            <p className="font-medium">{top_3_bullets}</p>
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Top 3 Bullets</h3>
+            <div className="p-3 bg-muted rounded-md">
+              <p className="font-medium whitespace-pre-wrap">{top_3_bullets}</p>
+            </div>
           </div>
         )}
       </div>
