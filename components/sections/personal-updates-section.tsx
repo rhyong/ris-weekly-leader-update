@@ -274,72 +274,70 @@ export default function PersonalUpdatesSection({ form }: PersonalUpdatesSectionP
           <CardTitle>Goal Tracking</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[40%]">Goal</TableHead>
-                <TableHead className="w-[20%]">Status</TableHead>
-                <TableHead className="w-[30%]">This Week's Update</TableHead>
-                <TableHead className="w-[10%]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {goals.map((goal, index) => (
-                <TableRow key={`goal-${index}`}>
-                  <TableCell>
+          <div className="space-y-6">
+            {goals.map((goal, index) => (
+              <div key={`goal-${index}`} className="border rounded-md p-4 space-y-4">
+                <div className="grid grid-cols-[1fr,auto] gap-4 items-start">
+                  <div>
+                    <Label className="mb-1 block">Goal</Label>
                     <InputWithAI
                       placeholder="Improve team velocity by 10%"
                       value={goal.description}
                       aiContext="goal_description"
+                      className="w-full"
                       onChange={(e) => updateGoalField(index, "description", e.target.value)}
                       onValueChange={(value) => updateGoalField(index, "description", value)}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={goal.status}
-                      onValueChange={(value) => updateGoalStatus(index, value as TrafficLight)}
-                    >
-                      <SelectTrigger className="w-[130px]">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Green">
-                          <div className="flex items-center">
-                            <span className="mr-2">🟢</span> On Track
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="Yellow">
-                          <div className="flex items-center">
-                            <span className="mr-2">🟡</span> At Risk
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="Red">
-                          <div className="flex items-center">
-                            <span className="mr-2">🔴</span> Off Track
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <InputWithAI
-                      placeholder="Short update on progress"
-                      value={goal.update}
-                      aiContext="goal_update"
-                      onChange={(e) => updateGoalField(index, "update", e.target.value)}
-                      onValueChange={(value) => updateGoalField(index, "update", value)}
-                    />
-                  </TableCell>
-                  <TableCell>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div>
+                      <Label className="mb-1 block">Status</Label>
+                      <Select
+                        value={goal.status}
+                        onValueChange={(value) => updateGoalStatus(index, value as TrafficLight)}
+                      >
+                        <SelectTrigger className="w-[130px]">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Green">
+                            <div className="flex items-center">
+                              <span className="mr-2">🟢</span> On Track
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Yellow">
+                            <div className="flex items-center">
+                              <span className="mr-2">🟡</span> At Risk
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Red">
+                            <div className="flex items-center">
+                              <span className="mr-2">🔴</span> Off Track
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <Button type="button" variant="ghost" size="icon" onClick={() => removeGoal(index)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="mb-1 block">This Week's Update</Label>
+                  <TextareaWithAI
+                    placeholder="Short update on progress"
+                    value={goal.update}
+                    aiContext="goal_update"
+                    className="min-h-[80px] w-full"
+                    onChange={(e) => updateGoalField(index, "update", e.target.value)}
+                    onValueChange={(value) => updateGoalField(index, "update", value)}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="mt-2">
             <Button type="button" variant="outline" size="sm" onClick={addGoal} disabled={goals.length >= 3}>
               <Plus className="h-4 w-4 mr-2" /> Add Goal (Max 3)

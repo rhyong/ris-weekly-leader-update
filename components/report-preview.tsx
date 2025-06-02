@@ -372,28 +372,24 @@ export default function ReportPreview({ data }: ReportPreviewProps) {
             {filteredGoals.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Goal Tracking</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[40%]">Goal</TableHead>
-                      <TableHead className="w-[20%]">Status</TableHead>
-                      <TableHead className="w-[40%]">This Week's Update</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredGoals.map((goal, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{goal.description}</TableCell>
-                        <TableCell>
-                          {goal.status === "Green" && <span>🟢 On Track</span>}
-                          {goal.status === "Yellow" && <span>🟡 At Risk</span>}
-                          {goal.status === "Red" && <span>🔴 Off Track</span>}
-                        </TableCell>
-                        <TableCell>{goal.update}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="space-y-4">
+                  {filteredGoals.map((goal, index) => (
+                    <div key={index} className="border p-4 rounded-md">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">{goal.description}</span>
+                        <span className="ml-4">
+                          {goal.status === "Green" && <span className="font-medium">🟢 On Track</span>}
+                          {goal.status === "Yellow" && <span className="font-medium">🟡 At Risk</span>}
+                          {goal.status === "Red" && <span className="font-medium">🔴 Off Track</span>}
+                        </span>
+                      </div>
+                      <div className="mt-2">
+                        <p className="text-sm font-medium">This Week's Update:</p>
+                        <p className="whitespace-pre-wrap">{goal.update}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
